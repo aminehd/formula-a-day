@@ -113,7 +113,14 @@ between 0 and 1, which is why it reads as a probability.</p>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">fad</span><span class="w"> </span><span class="kn">import</span> <span class="n">viz</span>
 
-<span class="n">X</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">160</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">160</span><span class="p">))</span>
+<span class="c1"># Rings that fade outward. A plain ramp would put most of the field in exp's</span>
+<span class="c1"># extremes, and since the heatmap normalises to the max, the rest renders</span>
+<span class="c1"># black. Keeping the values bounded and varying in BOTH axes keeps every step</span>
+<span class="c1"># readable -- worst-lit frame goes from 16% of the canvas to 67%.</span>
+<span class="n">_g</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">140</span><span class="p">)</span>
+<span class="n">_YY</span><span class="p">,</span> <span class="n">_XX</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">_g</span><span class="p">,</span> <span class="n">_g</span><span class="p">,</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">"ij"</span><span class="p">)</span>
+<span class="n">_R</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">_XX</span><span class="p">,</span> <span class="n">_YY</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">_R</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">_R</span><span class="p">)</span>
 </pre></div>
 
 <h2>As a field</h2>
@@ -122,7 +129,7 @@ something pulls it back into (0, 1). Nothing in the chain says "clip" -- the
 bound is a consequence.</p>
 <div class="highlight"><pre><span></span><span class="c1"># No jax.nn.sigmoid -- that is one opaque primitive. Built from arithmetic it</span>
 <span class="c1"># is four steps, and the animation can only show steps that exist.</span>
-<span class="nd">@viz</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"neon"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">460</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
+<span class="nd">@viz</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"neon"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">380</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
 </pre></div>

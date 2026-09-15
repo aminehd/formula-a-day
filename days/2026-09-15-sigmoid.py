@@ -13,7 +13,14 @@ import jax.numpy as jnp
 import numpy as np
 from fad import viz
 
-X = jnp.linspace(-8, 8, 160)[:, None] * jnp.ones((1, 160))
+# Rings that fade outward. A plain ramp would put most of the field in exp's
+# extremes, and since the heatmap normalises to the max, the rest renders
+# black. Keeping the values bounded and varying in BOTH axes keeps every step
+# readable -- worst-lit frame goes from 16% of the canvas to 67%.
+_g = jnp.linspace(-1, 1, 140)
+_YY, _XX = jnp.meshgrid(_g, _g, indexing="ij")
+_R = jnp.hypot(_XX, _YY)
+X = 3 * jnp.sin(4 * _R) * (1 - _R)
 
 # %% [markdown]
 # ## As a field
@@ -25,7 +32,7 @@ X = jnp.linspace(-8, 8, 160)[:, None] * jnp.ones((1, 160))
 # %%
 # No jax.nn.sigmoid -- that is one opaque primitive. Built from arithmetic it
 # is four steps, and the animation can only show steps that exist.
-@viz(X, palette="neon", size=460, tween=22)
+@viz(X, palette="neon", size=380, tween=22)
 def sigmoid(x):
     return 1 / (1 + jnp.exp(-x))
 
