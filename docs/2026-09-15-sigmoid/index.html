@@ -125,16 +125,41 @@ bound is a consequence.</p>
 </pre></div>
 
 <video src="sigmoid.mp4" autoplay loop muted playsinline></video>
-<h2>As a curve</h2>
-<p>The same formula on a 1-D sweep, so you can see the S.</p>
-<div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4000</span><span class="p">)</span>
+<h2>As a point cloud</h2>
+<p>The same formula, but the input is 2-D <em>coordinates</em> instead of a field of
+values. Sigmoid is elementwise, so it squashes x and y independently --
+the entire plane folds into the unit square.</p>
+<div class="highlight"><pre><span></span><span class="n">C</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">150_000</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="mf">3.0</span><span class="p">)</span>
 
-<span class="nd">@viz</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ice"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">460</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">sigmoid_curve</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
-    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
+<span class="nd">@viz</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"bloom"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">460</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="s2">"points"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sigmoid_points</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="p">))</span>
 </pre></div>
 
-<video src="sigmoid_curve.mp4" autoplay loop muted playsinline></video>
+<video src="sigmoid_points.mp4" autoplay loop muted playsinline></video>
+<h2>As graph paper</h2>
+<p>Now the same transform on a grid, which is where it stops being pretty and
+starts being the reason sigmoid fell out of favour.</p>
+<p>Watch the spacing. Near the origin the cells keep their shape -- that is the
+<strong>linear region</strong>. Toward the edges the lines pile up against the boundary:
+a big change in input becomes almost no change in output. That squashing is
+exactly the <strong>vanishing gradient</strong> -- the derivative there is nearly zero, so
+a neuron sitting out here learns almost nothing.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_graph_paper</span><span class="p">(</span><span class="n">lines</span><span class="o">=</span><span class="mi">26</span><span class="p">,</span> <span class="n">per</span><span class="o">=</span><span class="mi">1100</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="mf">6.0</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">ext</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="n">per</span><span class="p">)</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">ext</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="n">lines</span><span class="p">)</span>
+    <span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">per</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">lines</span><span class="p">)],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">H</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">lines</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">per</span><span class="p">)],</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">V</span><span class="p">,</span> <span class="n">H</span><span class="p">])</span>
+
+<span class="n">GP</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">_graph_paper</span><span class="p">())</span>
+
+<span class="nd">@viz</span><span class="p">(</span><span class="n">GP</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ice"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">520</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">26</span><span class="p">,</span> <span class="n">hold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="s2">"points"</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sigmoid_grid</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="p">))</span>
+</pre></div>
+
+<video src="sigmoid_grid.mp4" autoplay loop muted playsinline></video>
 <h2>What I noticed</h2>
 <p>The range at each step, on an input of -8..8:</p>
 <table>
