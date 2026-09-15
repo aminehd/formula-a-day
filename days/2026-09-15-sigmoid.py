@@ -30,16 +30,44 @@ def sigmoid(x):
     return 1 / (1 + jnp.exp(-x))
 
 # %% [markdown]
-# ## As a curve
+# ## As a point cloud
 #
-# The same formula on a 1-D sweep, so you can see the S.
+# The same formula, but the input is 2-D *coordinates* instead of a field of
+# values. Sigmoid is elementwise, so it squashes x and y independently --
+# the entire plane folds into the unit square.
 
 # %%
-T = jnp.linspace(-8, 8, 4000)
+C = jnp.asarray(np.random.default_rng(0).normal(size=(150_000, 2)) * 3.0)
 
-@viz(T, palette="ice", size=460, tween=22)
-def sigmoid_curve(x):
-    return 1 / (1 + jnp.exp(-x))
+@viz(C, palette="bloom", size=460, tween=22, rep="points")
+def sigmoid_points(p):
+    return 1 / (1 + jnp.exp(-p))
+
+# %% [markdown]
+# ## As graph paper
+#
+# Now the same transform on a grid, which is where it stops being pretty and
+# starts being the reason sigmoid fell out of favour.
+#
+# Watch the spacing. Near the origin the cells keep their shape -- that is the
+# **linear region**. Toward the edges the lines pile up against the boundary:
+# a big change in input becomes almost no change in output. That squashing is
+# exactly the **vanishing gradient** -- the derivative there is nearly zero, so
+# a neuron sitting out here learns almost nothing.
+
+# %%
+def _graph_paper(lines=26, per=1100, ext=6.0):
+    t = np.linspace(-ext, ext, per)
+    L = np.linspace(-ext, ext, lines)
+    V = np.stack([np.repeat(L, per), np.tile(t, lines)], 1)
+    H = np.stack([np.tile(t, lines), np.repeat(L, per)], 1)
+    return np.concatenate([V, H])
+
+GP = jnp.asarray(_graph_paper())
+
+@viz(GP, palette="ice", size=520, tween=26, hold=8, rep="points")
+def sigmoid_grid(p):
+    return 1 / (1 + jnp.exp(-p))
 
 # %% [markdown]
 # ## What I noticed
