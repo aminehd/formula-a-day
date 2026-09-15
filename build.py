@@ -107,6 +107,35 @@ def render_day(f):
     return slug, title, vids, made
 
 
+def gallery_html():
+    """gallery.md -> captioned clips. Bullets of the form
+
+        - **name** -- caption
+
+    become cards, matched to docs/gallery/<name>.mp4. Any prose before or
+    after the bullets is kept, so the file stays editable as plain markdown.
+    """
+    gal, gdir = ROOT / "gallery.md", SITE / "gallery"
+    if not (gal.exists() and gdir.exists()):
+        return []
+    body = md.markdown(gal.read_text(), extensions=["tables", "fenced_code"])
+    names = re.findall(r"<strong>(\w+)</strong>", body)
+    head, tail = body.split("<ul>")[0], body.rsplit("</ul>", 1)[-1]
+    cards = []
+    for n in names:
+        if not (gdir / f"{n}.mp4").exists():
+            continue
+        cap = re.search(rf"<strong>{n}</strong>\s*(?:&[a-z]+;|-|\u2014)*\s*"
+                        rf"(.*?)</li>", body, re.S)
+        txt = re.sub(r"<[^>]+>", "", cap.group(1)).strip() if cap else ""
+        cards.append(f'<div><h3>{n}</h3>'
+                     f'<video src="gallery/{n}.mp4" autoplay loop muted '
+                     f'playsinline></video><div>{txt}</div></div>')
+    return [head, f'<div class="gal grid2">{"".join(cards)}</div>', tail,
+            '<hr style="border:0;border-top:1px solid var(--line);'
+            'margin:52px 0 10px">']
+
+
 def main():
     SITE.mkdir(exist_ok=True)
     days, rows = [], []
@@ -122,6 +151,7 @@ def main():
     if intro.exists():
         idx.append(md.markdown(intro.read_text(),
                                extensions=["tables", "fenced_code"]))
+    idx += gallery_html()
     if len(days) > 1:                       # a jump list, once there are a few
         idx.append("<p class=dim>" + " &middot; ".join(
             f'<a href="#{s}">{ti}</a>' for _, s, ti, _ in days) + "</p>")
@@ -131,26 +161,6 @@ def main():
         idx.append(f'<div class=dim>{slug.rsplit("-", 1)[0][:10]} &middot; '
                    f'<a class=back href="{slug}/index.html">permalink</a></div>')
         idx += day_body(f, vids, prefix=f"{slug}/")
-    gal = ROOT / "gallery.md"
-    gdir = SITE / "gallery"
-    if gal.exists() and gdir.exists():
-        idx.append('<hr style="border:0;border-top:1px solid var(--line);'
-                   'margin:52px 0 10px">')
-        body = md.markdown(gal.read_text(), extensions=["tables", "fenced_code"])
-        # every "- **name** -- ..." bullet becomes a captioned clip
-        names = re.findall(r"<strong>(\w+)</strong>", body)
-        idx.append(body.split("<ul>")[0])
-        cards = []
-        for n in names:
-            if not (gdir / f"{n}.mp4").exists():
-                continue
-            cap = re.search(rf"<strong>{n}</strong>\s*(?:&[a-z]+;|-|\u2014)*\s*"
-                            rf"(.*?)</li>", body, re.S)
-            txt = re.sub(r"<[^>]+>", "", cap.group(1)).strip() if cap else ""
-            cards.append(f'<div><h3>{n}</h3>'
-                         f'<video src="gallery/{n}.mp4" autoplay loop muted '
-                         f'playsinline></video><div>{txt}</div></div>')
-        idx.append(f'<div class="gal grid2">{"".join(cards)}</div>')
     (SITE / "index.html").write_text("\n".join(idx))
     print(f"  built {len(days)} day(s) -> docs/  (index is the full scroll)")
 

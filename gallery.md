@@ -17,3 +17,6 @@ p + 1.3 * jnp.sin(1.7 * flip)
   by a drifting noise field.
 - **projection** — 96 dimensions of noise, fitted down onto a 2-simplex. The
   triangle was always in there.
+
+I want to explore the useful ones in ML with this framework. I feel like one
+day there'll be a formula in my studies that actually looks nice.
