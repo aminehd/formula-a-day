@@ -9,7 +9,8 @@ code{font-family:ui-monospace,Menlo,monospace;font-size:13px}
 p code{background:var(--card);padding:1px 5px;border-radius:4px}
 .highlight{background:var(--card);border:1px solid var(--line);
  border-radius:8px;padding:12px 14px;overflow-x:auto;margin:16px 0}
-video{width:100%;border-radius:8px;margin:14px 0;background:#000}
+video{width:52%;border-radius:8px;margin:14px 0;background:#000;display:block}
+@media(max-width:620px){video{width:100%}}
 .back{color:var(--dim);text-decoration:none;font-size:13px}
 .dim{color:var(--dim);font-size:13px}
 table{border-collapse:collapse} td,th{border:1px solid var(--line);padding:5px 9px}
@@ -129,7 +130,7 @@ something pulls it back into (0, 1). Nothing in the chain says "clip" -- the
 bound is a consequence.</p>
 <div class="highlight"><pre><span></span><span class="c1"># No jax.nn.sigmoid -- that is one opaque primitive. Built from arithmetic it</span>
 <span class="c1"># is four steps, and the animation can only show steps that exist.</span>
-<span class="nd">@viz</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"neon"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">340</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">36</span><span class="p">,</span> <span class="n">hold</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+<span class="nd">@viz</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">36</span><span class="p">,</span> <span class="n">hold</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
 </pre></div>
@@ -172,7 +173,7 @@ exponentially -- which is the thing to remember well beyond this plot.</p>
 
 <span class="c1"># tween = interpolation frames per step; duration = ms per frame.</span>
 <span class="c1"># Together they set how long you get to actually watch each op.</span>
-<span class="nd">@viz</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"bloom"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="s2">"points"</span><span class="p">,</span>
+<span class="nd">@viz</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"bloom"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="s2">"points"</span><span class="p">,</span>
      <span class="n">hold</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sigmoid_points</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="p">))</span>
@@ -196,7 +197,7 @@ a neuron sitting out here learns almost nothing.</p>
 
 <span class="n">GP</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">_graph_paper</span><span class="p">())</span>
 
-<span class="nd">@viz</span><span class="p">(</span><span class="n">GP</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ice"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">420</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">36</span><span class="p">,</span> <span class="n">hold</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
+<span class="nd">@viz</span><span class="p">(</span><span class="n">GP</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ice"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">760</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">36</span><span class="p">,</span> <span class="n">hold</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span>
      <span class="n">rep</span><span class="o">=</span><span class="s2">"points"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sigmoid_grid</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="p">))</span>
