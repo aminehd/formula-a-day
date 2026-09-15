@@ -166,6 +166,25 @@ bound is a consequence.</p>
 </pre></div>
 
 <video src="2026-09-15-sigmoid/sigmoid.mp4" autoplay loop muted playsinline></video>
+<h2>From noise</h2>
+<p>Same formula, random input. Nothing is designed here -- and that is the point.
+The input is uniform noise over -3.5..3.5, and sigmoid pulls all of it into
+0.03..0.97, crowding most values toward the two ends. Push the range wider and
+it becomes a <strong>step function</strong>.</p>
+<p>That is saturation again, from a third angle: the grid showed it as spacing,
+the cloud as a boundary, and this shows it as <em>lost information</em>. Two inputs
+of 6 and 9 are very different numbers and come out almost identical.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Uniform, not Gaussian -- same lesson as the point cloud. normal*6 reaches</span>
+<span class="c1"># +-25, and exp(25) is 7e10, so a few pixels blacken the whole frame.</span>
+<span class="n">N</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">140</span><span class="p">,</span> <span class="mi">140</span><span class="p">)))</span>
+
+<span class="nd">@viz</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"vapor"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">hold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">55</span><span class="p">,</span>
+     <span class="n">rep_kw</span><span class="o">=</span><span class="p">{</span><span class="s2">"grain"</span><span class="p">:</span> <span class="mf">0.26</span><span class="p">})</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sigmoid_noise</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+<video src="2026-09-15-sigmoid/sigmoid_noise.mp4" autoplay loop muted playsinline></video>
 <h2>As a point cloud</h2>
 <p>The same formula, but the input is 2-D <em>coordinates</em> instead of a field of
 values. Sigmoid is elementwise, so it squashes x and y independently --
