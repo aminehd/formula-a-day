@@ -32,7 +32,14 @@ X = 3 * jnp.sin(4 * _R) * (1 - _R)
 # %%
 # No jax.nn.sigmoid -- that is one opaque primitive. Built from arithmetic it
 # is four steps, and the animation can only show steps that exist.
-@viz(X, palette="ultra", size=680, tween=36, hold=10, duration=80)
+# grain: fine static texture inside as_heatmap, strongest in the midtones and
+# absent at pure black/white (ink on fibre). A smooth bicubic gradient reads
+# as glossy plastic; the point clouds look matte because they are made of
+# discrete splatted particles. This puts that texture back.
+# Bumped to 0.26 because the render is downscaled 680 -> ~420 on the page,
+# which averages fine grain away.
+@viz(X, palette="ultra", size=680, tween=30, hold=8, duration=55,
+     rep_kw={"grain": 0.26})
 def sigmoid(x):
     return 1 / (1 + jnp.exp(-x))
 
@@ -63,8 +70,8 @@ C = jnp.asarray(np.random.default_rng(0).uniform(-2.5, 2.5, size=(150_000, 2)))
 
 # tween = interpolation frames per step; duration = ms per frame.
 # Together they set how long you get to actually watch each op.
-@viz(C, palette="bloom", size=680, tween=40, rep="points",
-     hold=10, duration=80)
+@viz(C, palette="bloom", size=680, tween=32, rep="points",
+     hold=8, duration=55)
 def sigmoid_points(p):
     return 1 / (1 + jnp.exp(-p))
 
@@ -90,7 +97,7 @@ def _graph_paper(lines=26, per=1100, ext=6.0):
 
 GP = jnp.asarray(_graph_paper())
 
-@viz(GP, palette="ice", size=760, tween=36, hold=10, duration=80,
+@viz(GP, palette="ice", size=760, tween=30, hold=8, duration=55,
      rep="points")
 def sigmoid_grid(p):
     return 1 / (1 + jnp.exp(-p))
