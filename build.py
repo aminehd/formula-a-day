@@ -62,7 +62,8 @@ code{{font-family:ui-monospace,Menlo,monospace;font-size:13px}}
 p code{{background:var(--card);padding:1px 5px;border-radius:4px}}
 .highlight{{background:var(--card);border:1px solid var(--line);
  border-radius:8px;padding:12px 14px;overflow-x:auto;margin:16px 0}}
-video{{width:100%;border-radius:8px;margin:14px 0;background:#000}}
+video{{width:52%;border-radius:8px;margin:14px 0;background:#000;display:block}}
+@media(max-width:620px){{video{{width:100%}}}}
 .back{{color:var(--dim);text-decoration:none;font-size:13px}}
 .dim{{color:var(--dim);font-size:13px}}
 table{{border-collapse:collapse}} td,th{{border:1px solid var(--line);padding:5px 9px}}
