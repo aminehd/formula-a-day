@@ -5,7 +5,7 @@ intermediate value animated with [jaxvis](../jaxvis-pkg).
 
 ```
 days/YYYY-MM-DD-name.py    write here -- markdown cells + code + @viz
-site/                      generated; this is what GitHub Pages serves
+docs/                     generated; this is what GitHub Pages serves
 ```
 
 ```bash

@@ -6,7 +6,7 @@ import json, sys, urllib.parse
 
 # Serve any folder: python serve.py [DIR] [PORT]
 OUT = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else \
-      Path(__file__).resolve().parent / "site"
+      Path(__file__).resolve().parent / "docs"
 PORT = int(sys.argv[2]) if len(sys.argv) > 2 else int(os.environ.get("PORT", 8092))
 
 
