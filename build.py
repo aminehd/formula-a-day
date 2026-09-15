@@ -1,4 +1,4 @@
-"""days/*.py -> site/. Run after rendering; converts GIFs and writes HTML.
+"""days/*.py -> docs/. Run after rendering; converts GIFs and writes HTML.
 
 The day file IS the page: `# %% [markdown]` blocks become prose, code blocks
 become highlighted code, and any GIF the file rendered is embedded as MP4.
@@ -15,7 +15,7 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
 ROOT = Path(__file__).resolve().parent
-DAYS, SITE = ROOT / "days", ROOT / "site"
+DAYS, SITE = ROOT / "days", ROOT / "docs"
 FMT = HtmlFormatter(style="monokai", nowrap=False)
 
 
@@ -111,7 +111,7 @@ def main():
         idx.append(f'<h2><a href="{slug}/index.html">{title}</a></h2>'
                    f'<div class=dim>{slug.rsplit("-", 1)[0][:10]}</div>{v}')
     (SITE / "index.html").write_text("\n".join(idx))
-    print(f"  built {len(rows)} day(s) -> site/")
+    print(f"  built {len(rows)} day(s) -> docs/")
 
 
 if __name__ == "__main__":
