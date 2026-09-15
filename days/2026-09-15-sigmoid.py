@@ -44,6 +44,28 @@ def sigmoid(x):
     return 1 / (1 + jnp.exp(-x))
 
 # %% [markdown]
+# ## From noise
+#
+# Same formula, random input. Nothing is designed here -- and that is the point.
+# The input is uniform noise over -3.5..3.5, and sigmoid pulls all of it into
+# 0.03..0.97, crowding most values toward the two ends. Push the range wider and
+# it becomes a **step function**.
+#
+# That is saturation again, from a third angle: the grid showed it as spacing,
+# the cloud as a boundary, and this shows it as *lost information*. Two inputs
+# of 6 and 9 are very different numbers and come out almost identical.
+
+# %%
+# Uniform, not Gaussian -- same lesson as the point cloud. normal*6 reaches
+# +-25, and exp(25) is 7e10, so a few pixels blacken the whole frame.
+N = jnp.asarray(np.random.default_rng(3).uniform(-3.5, 3.5, size=(140, 140)))
+
+@viz(N, palette="vapor", size=680, tween=30, hold=8, duration=55,
+     rep_kw={"grain": 0.26})
+def sigmoid_noise(x):
+    return 1 / (1 + jnp.exp(-x))
+
+# %% [markdown]
 # ## As a point cloud
 #
 # The same formula, but the input is 2-D *coordinates* instead of a field of
