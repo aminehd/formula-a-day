@@ -11,6 +11,7 @@ p code{background:var(--card);padding:1px 5px;border-radius:4px}
  border-radius:8px;padding:12px 14px;overflow-x:auto;margin:16px 0}
 video{width:100%;border-radius:8px;margin:14px 0;background:#000}
 .back{color:var(--dim);text-decoration:none;font-size:13px}
+.dim{color:var(--dim);font-size:13px}
 table{border-collapse:collapse} td,th{border:1px solid var(--line);padding:5px 9px}
 pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -101,4 +102,96 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 <h1>a formula a day</h1>
 <p>One ML building block per day: the formula, what it does, and every intermediate value animated.</p>
-<h2><a href="2026-09-15-sigmoid/index.html">sigmoid</a></h2><div class=dim>2026-09-15</div>
+<hr id="2026-09-15-sigmoid" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
+<div class=dim>2026-09-15 &middot; <a class=back href="2026-09-15-sigmoid/index.html">permalink</a></div>
+<h1>Sigmoid</h1>
+<p>$$\sigma(x) = \frac{1}{1 + e^{-x}}$$</p>
+<p>The squashing function. Takes any real number and returns something strictly
+between 0 and 1, which is why it reads as a probability.</p>
+<p><strong>Write your notes here.</strong> What surprised you?</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fad</span><span class="w"> </span><span class="kn">import</span> <span class="n">viz</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">160</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">160</span><span class="p">))</span>
+</pre></div>
+
+<h2>As a field</h2>
+<p>Every intermediate value, animated. Watch the range: <code>exp</code> explodes it, then
+something pulls it back into (0, 1). Nothing in the chain says "clip" -- the
+bound is a consequence.</p>
+<div class="highlight"><pre><span></span><span class="c1"># No jax.nn.sigmoid -- that is one opaque primitive. Built from arithmetic it</span>
+<span class="c1"># is four steps, and the animation can only show steps that exist.</span>
+<span class="nd">@viz</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"neon"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">460</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+<video src="2026-09-15-sigmoid/sigmoid.mp4" autoplay loop muted playsinline></video>
+<h2>As a curve</h2>
+<p>The same formula on a 1-D sweep, so you can see the S.</p>
+<div class="highlight"><pre><span></span><span class="n">T</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4000</span><span class="p">)</span>
+
+<span class="nd">@viz</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ice"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">460</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">22</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sigmoid_curve</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+
+<video src="2026-09-15-sigmoid/sigmoid_curve.mp4" autoplay loop muted playsinline></video>
+<h2>What I noticed</h2>
+<p>The range at each step, on an input of -8..8:</p>
+<table>
+<thead>
+<tr>
+<th>step</th>
+<th>min</th>
+<th>max</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input</code></td>
+<td>-8.0000</td>
+<td>8.00</td>
+</tr>
+<tr>
+<td><code>neg</code></td>
+<td>-8.0000</td>
+<td>8.00</td>
+</tr>
+<tr>
+<td><code>exp</code></td>
+<td>0.0003</td>
+<td><strong>2980.96</strong></td>
+</tr>
+<tr>
+<td><code>add</code></td>
+<td>1.0003</td>
+<td>2981.96</td>
+</tr>
+<tr>
+<td><code>div</code></td>
+<td>0.0003</td>
+<td>1.00</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Which op squashes?</strong> <code>div</code>. <code>exp</code> blows the range up to nearly 3000 -- four
+orders of magnitude -- and the divide brings all of it back inside 1. The
+animation makes this obvious: the field goes blinding at <code>exp</code>, then snaps
+flat.</p>
+<p><strong>Where does the (0, 1) bound come from?</strong> Nothing clips. It falls out of two
+facts about the shape of the expression:</p>
+<ul>
+<li><code>exp</code> is <strong>always positive</strong>, so <code>1 + exp(-x)</code> is always <code>&gt; 1</code>. One over
+  something bigger than one is always <code>&lt; 1</code>. That is the ceiling.</li>
+<li>as <code>x -&gt; -inf</code>, <code>exp(-x) -&gt; inf</code>, so the quotient goes to 0 but never
+  reaches it. That is the floor.</li>
+</ul>
+<p>So the <code>+ 1</code> is not cosmetic -- it is the entire upper bound. Drop it and
+<code>1/exp(-x)</code> is just <code>e^x</code>, which is unbounded. One character is the
+difference between a probability and an explosion.</p>
+<p>Worth noting <code>exp</code> hit 2981 on a range of only +-8. At <code>x = -100</code> it
+overflows to <code>inf</code>, and <code>1/inf</code> is 0 -- which is <em>correct</em>, and why the naive
+form survives where you might expect NaN. The failure mode is the other
+direction, in the log-likelihood, and that is what <code>log_sigmoid</code> exists for.</p>

@@ -64,10 +64,27 @@ p code{{background:var(--card);padding:1px 5px;border-radius:4px}}
  border-radius:8px;padding:12px 14px;overflow-x:auto;margin:16px 0}}
 video{{width:100%;border-radius:8px;margin:14px 0;background:#000}}
 .back{{color:var(--dim);text-decoration:none;font-size:13px}}
+.dim{{color:var(--dim);font-size:13px}}
 table{{border-collapse:collapse}} td,th{{border:1px solid var(--line);padding:5px 9px}}
 {pyg}
 </style>
 """
+
+
+def day_body(f, vids, prefix=""):
+    """The day's content as HTML chunks. Shared by its own page and the index,
+    so the long scroll and the permalink can never drift apart."""
+    out = []
+    for kind, body in cells(f.read_text()):
+        if kind == "md":
+            out.append(md.markdown(body, extensions=["tables", "fenced_code"]))
+        else:
+            out.append(highlight(body, PythonLexer(), FMT))
+            for fn in re.findall(r"^def (\w+)", body, re.M):
+                if f"{fn}.mp4" in vids:
+                    out.append(f'<video src="{prefix}{fn}.mp4" autoplay loop '
+                               f'muted playsinline></video>')
+    return out
 
 
 def render_day(f):
@@ -76,42 +93,39 @@ def render_day(f):
     d.mkdir(parents=True, exist_ok=True)
     made = to_mp4(d)
     title = slug.split("-", 3)[-1].replace("-", " ")
+    vids = sorted(p.name for p in d.glob("*.mp4"))
     html = [HEAD.format(title=title, pyg=FMT.get_style_defs(".highlight")),
             '<a class=back href="../index.html">&larr; all formulas</a>']
-    vids = sorted(p.name for p in d.glob("*.mp4"))
-    for kind, body in cells(f.read_text()):
-        if kind == "md":
-            html.append(md.markdown(body, extensions=["tables", "fenced_code"]))
-        else:
-            html.append(highlight(body, PythonLexer(), FMT))
-            # a cell that renders something shows it right there
-            for fn in re.findall(r"^def (\w+)", body, re.M):
-                if f"{fn}.mp4" in vids:
-                    html.append(f'<video src="{fn}.mp4" autoplay loop muted '
-                                f'playsinline></video>')
+    html += day_body(f, vids)
     (d / "index.html").write_text("\n".join(html))
     return slug, title, vids, made
 
 
 def main():
     SITE.mkdir(exist_ok=True)
-    rows = []
+    days, rows = [], []
     for f in sorted(DAYS.glob("*.py"), reverse=True):
         slug, title, vids, made = render_day(f)
         for n, gk, mk in made:
             print(f"  {n}  {gk} KB -> {mk} KB")
-        rows.append((slug, title, vids))
-    idx = [HEAD.format(title="formula a day", pyg=FMT.get_style_defs(".highlight")),
+        days.append((f, slug, title, vids))
+
+    idx = [HEAD.format(title="formula a day",
+                       pyg=FMT.get_style_defs(".highlight")),
            "<h1>a formula a day</h1>",
-           "<p>One ML building block per day: the formula, what it does, "
-           "and every intermediate value animated.</p>"]
-    for slug, title, vids in rows:
-        v = (f'<video src="{slug}/{vids[0]}" autoplay loop muted playsinline>'
-             '</video>') if vids else ""
-        idx.append(f'<h2><a href="{slug}/index.html">{title}</a></h2>'
-                   f'<div class=dim>{slug.rsplit("-", 1)[0][:10]}</div>{v}')
+           "<p>One ML building block per day: the formula, what it does, and "
+           "every intermediate value animated.</p>"]
+    if len(days) > 1:                       # a jump list, once there are a few
+        idx.append("<p class=dim>" + " &middot; ".join(
+            f'<a href="#{s}">{ti}</a>' for _, s, ti, _ in days) + "</p>")
+    for f, slug, title, vids in days:
+        idx.append(f'<hr id="{slug}" style="border:0;border-top:1px solid '
+                   f'var(--line);margin:46px 0 22px">')
+        idx.append(f'<div class=dim>{slug.rsplit("-", 1)[0][:10]} &middot; '
+                   f'<a class=back href="{slug}/index.html">permalink</a></div>')
+        idx += day_body(f, vids, prefix=f"{slug}/")
     (SITE / "index.html").write_text("\n".join(idx))
-    print(f"  built {len(rows)} day(s) -> docs/")
+    print(f"  built {len(days)} day(s) -> docs/  (index is the full scroll)")
 
 
 if __name__ == "__main__":
