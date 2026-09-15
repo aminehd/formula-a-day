@@ -115,6 +115,17 @@ Knowing what my formula looks like seems good for humans — and maybe as an
 agentic knowledge base too. Imagine a proof agent that can reason in shape and
 form.</p>
 <p>One ML building block a day: the formula, what it does, and every step animated.</p>
+<h2>Just because they're beautiful</h2>
+<p>Same framework, no lesson attached.</p>
+
+<div class="gal grid2"><div><h3>shear</h3><video src="gallery/shear.mp4" autoplay loop muted playsinline></video><div>each axis displaced by the sine of the other. 200k particles.</div></div><div><h3>fold</h3><video src="gallery/fold.mp4" autoplay loop muted playsinline></video><div>sine domain folding against a rotation.</div></div><div><h3>galaxy</h3><video src="gallery/galaxy.mp4" autoplay loop muted playsinline></video><div>rotate by 1/r, so the inside spins faster than the outside. That
+  is why real spiral galaxies have arms.</div></div><div><h3>petals</h3><video src="gallery/petals.mp4" autoplay loop muted playsinline></video><div>rotation by sin(5θ), five-fold.</div></div><div><h3>liquid_flow</h3><video src="gallery/liquid_flow.mp4" autoplay loop muted playsinline></video><div>domain warping: the field read at coordinates pushed around
+  by a drifting noise field.</div></div><div><h3>projection</h3><video src="gallery/projection.mp4" autoplay loop muted playsinline></video><div>96 dimensions of noise, fitted down onto a 2-simplex. The
+  triangle was always in there.</div></div></div>
+
+<p>I want to explore the useful ones in ML with this framework. I feel like one
+day there'll be a formula in my studies that actually looks nice.</p>
+<hr style="border:0;border-top:1px solid var(--line);margin:52px 0 10px">
 <hr id="2026-09-15-sigmoid" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
 <div class=dim>2026-09-15 &middot; <a class=back href="2026-09-15-sigmoid/index.html">permalink</a></div>
 <h1>Sigmoid</h1>
@@ -225,11 +236,3 @@ difference between a probability and an explosion.</p>
 overflows to <code>inf</code>, and <code>1/inf</code> is 0 -- which is <em>correct</em>, and why the naive
 form survives where you might expect NaN. The failure mode is the other
 direction, in the log-likelihood, and that is what <code>log_sigmoid</code> exists for.</p>
-<hr style="border:0;border-top:1px solid var(--line);margin:52px 0 10px">
-<h2>Just because they're beautiful</h2>
-<p>Same framework, no lesson attached.</p>
-
-<div class="gal grid2"><div><h3>shear</h3><video src="gallery/shear.mp4" autoplay loop muted playsinline></video><div>each axis displaced by the sine of the other. 200k particles.</div></div><div><h3>fold</h3><video src="gallery/fold.mp4" autoplay loop muted playsinline></video><div>sine domain folding against a rotation.</div></div><div><h3>galaxy</h3><video src="gallery/galaxy.mp4" autoplay loop muted playsinline></video><div>rotate by 1/r, so the inside spins faster than the outside. That
-  is why real spiral galaxies have arms.</div></div><div><h3>petals</h3><video src="gallery/petals.mp4" autoplay loop muted playsinline></video><div>rotation by sin(5θ), five-fold.</div></div><div><h3>liquid_flow</h3><video src="gallery/liquid_flow.mp4" autoplay loop muted playsinline></video><div>domain warping: the field read at coordinates pushed around
-  by a drifting noise field.</div></div><div><h3>projection</h3><video src="gallery/projection.mp4" autoplay loop muted playsinline></video><div>96 dimensions of noise, fitted down onto a 2-simplex. The
-  triangle was always in there.</div></div></div>
