@@ -26,7 +26,7 @@ def _slug_of_caller():
 def viz(*args, name=None, **kw):
     """Render a function into this day's folder. Same kwargs as visualize()."""
     slug = _slug_of_caller()
-    d = ROOT / "site" / slug
+    d = ROOT / "docs" / slug
     d.mkdir(parents=True, exist_ok=True)
 
     def deco(fn):
