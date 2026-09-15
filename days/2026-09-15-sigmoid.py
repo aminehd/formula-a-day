@@ -35,9 +35,24 @@ def sigmoid(x):
 # The same formula, but the input is 2-D *coordinates* instead of a field of
 # values. Sigmoid is elementwise, so it squashes x and y independently --
 # the entire plane folds into the unit square.
+#
+# The input is a **uniform square, not a Gaussian**, and that matters more than
+# it looks. A Gaussian has tails: with `normal * 3` a few of the 150k points sit
+# at +-14, and `exp(14)` is ~1.2 million. Those few points then set the scale
+# for every frame, so the other 149,990 collapse into a corner. Measured share
+# of the canvas actually lit, at the worst step:
+#
+# | input | worst step |
+# |---|---|
+# | `normal * 3` | 0.1% |
+# | disc, r=3 | 10.1% |
+# | uniform square, +-2.5 | **23.1%** |
+#
+# Bounded input, no tails, nothing to blow up. `exp` punishes outliers
+# exponentially -- which is the thing to remember well beyond this plot.
 
 # %%
-C = jnp.asarray(np.random.default_rng(0).normal(size=(150_000, 2)) * 3.0)
+C = jnp.asarray(np.random.default_rng(0).uniform(-2.5, 2.5, size=(150_000, 2)))
 
 @viz(C, palette="bloom", size=460, tween=22, rep="points")
 def sigmoid_points(p):

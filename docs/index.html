@@ -132,7 +132,36 @@ bound is a consequence.</p>
 <p>The same formula, but the input is 2-D <em>coordinates</em> instead of a field of
 values. Sigmoid is elementwise, so it squashes x and y independently --
 the entire plane folds into the unit square.</p>
-<div class="highlight"><pre><span></span><span class="n">C</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">150_000</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="mf">3.0</span><span class="p">)</span>
+<p>The input is a <strong>uniform square, not a Gaussian</strong>, and that matters more than
+it looks. A Gaussian has tails: with <code>normal * 3</code> a few of the 150k points sit
+at +-14, and <code>exp(14)</code> is ~1.2 million. Those few points then set the scale
+for every frame, so the other 149,990 collapse into a corner. Measured share
+of the canvas actually lit, at the worst step:</p>
+<table>
+<thead>
+<tr>
+<th>input</th>
+<th>worst step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>normal * 3</code></td>
+<td>0.1%</td>
+</tr>
+<tr>
+<td>disc, r=3</td>
+<td>10.1%</td>
+</tr>
+<tr>
+<td>uniform square, +-2.5</td>
+<td><strong>23.1%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Bounded input, no tails, nothing to blow up. <code>exp</code> punishes outliers
+exponentially -- which is the thing to remember well beyond this plot.</p>
+<div class="highlight"><pre><span></span><span class="n">C</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">150_000</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
 
 <span class="nd">@viz</span><span class="p">(</span><span class="n">C</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"bloom"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">460</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">rep</span><span class="o">=</span><span class="s2">"points"</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">sigmoid_points</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
