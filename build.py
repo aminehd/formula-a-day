@@ -56,16 +56,21 @@ HEAD = """<!doctype html><meta charset=utf-8><title>{title}</title>
 <style>
 :root{{--bg:#0b0b10;--fg:#e9e6f0;--dim:#8b86a0;--line:#26263a;--card:#15151f}}
 body{{margin:0 auto;max-width:820px;padding:30px 20px 90px;background:var(--bg);
- color:var(--fg);font:15px/1.7 -apple-system,Segoe UI,Roboto,sans-serif}}
-a{{color:#8ad7ff}} h1{{font-size:26px}} h2{{margin-top:34px;font-size:19px}}
-code{{font-family:ui-monospace,Menlo,monospace;font-size:13px}}
+ color:var(--fg);font:17px/1.75 -apple-system,Segoe UI,Roboto,sans-serif}}
+a{{color:#8ad7ff}} h1{{font-size:30px}} h2{{margin-top:38px;font-size:22px}}
+code{{font-family:ui-monospace,Menlo,monospace;font-size:14px}}
 p code{{background:var(--card);padding:1px 5px;border-radius:4px}}
 .highlight{{background:var(--card);border:1px solid var(--line);
  border-radius:8px;padding:12px 14px;overflow-x:auto;margin:16px 0}}
 video{{width:52%;border-radius:8px;margin:14px 0;background:#000;display:block}}
 @media(max-width:620px){{video{{width:100%}}}}
 .back{{color:var(--dim);text-decoration:none;font-size:13px}}
-.dim{{color:var(--dim);font-size:13px}}
+.dim{{color:var(--dim);font-size:14px}}
+.gal{{font-size:14px;color:var(--dim)}}
+.gal video{{width:100%;margin:6px 0 2px}}
+.gal h3{{font-size:16px;margin:26px 0 2px;color:var(--fg)}}
+.grid2{{display:grid;grid-template-columns:1fr 1fr;gap:20px}}
+@media(max-width:620px){{.grid2{{grid-template-columns:1fr}}}}
 table{{border-collapse:collapse}} td,th{{border:1px solid var(--line);padding:5px 9px}}
 {pyg}
 </style>
@@ -112,10 +117,11 @@ def main():
         days.append((f, slug, title, vids))
 
     idx = [HEAD.format(title="formula a day",
-                       pyg=FMT.get_style_defs(".highlight")),
-           "<h1>a formula a day</h1>",
-           "<p>One ML building block per day: the formula, what it does, and "
-           "every intermediate value animated.</p>"]
+                       pyg=FMT.get_style_defs(".highlight"))]
+    intro = ROOT / "intro.md"
+    if intro.exists():
+        idx.append(md.markdown(intro.read_text(),
+                               extensions=["tables", "fenced_code"]))
     if len(days) > 1:                       # a jump list, once there are a few
         idx.append("<p class=dim>" + " &middot; ".join(
             f'<a href="#{s}">{ti}</a>' for _, s, ti, _ in days) + "</p>")
@@ -125,6 +131,26 @@ def main():
         idx.append(f'<div class=dim>{slug.rsplit("-", 1)[0][:10]} &middot; '
                    f'<a class=back href="{slug}/index.html">permalink</a></div>')
         idx += day_body(f, vids, prefix=f"{slug}/")
+    gal = ROOT / "gallery.md"
+    gdir = SITE / "gallery"
+    if gal.exists() and gdir.exists():
+        idx.append('<hr style="border:0;border-top:1px solid var(--line);'
+                   'margin:52px 0 10px">')
+        body = md.markdown(gal.read_text(), extensions=["tables", "fenced_code"])
+        # every "- **name** -- ..." bullet becomes a captioned clip
+        names = re.findall(r"<strong>(\w+)</strong>", body)
+        idx.append(body.split("<ul>")[0])
+        cards = []
+        for n in names:
+            if not (gdir / f"{n}.mp4").exists():
+                continue
+            cap = re.search(rf"<strong>{n}</strong>\s*(?:&[a-z]+;|-|\u2014)*\s*"
+                            rf"(.*?)</li>", body, re.S)
+            txt = re.sub(r"<[^>]+>", "", cap.group(1)).strip() if cap else ""
+            cards.append(f'<div><h3>{n}</h3>'
+                         f'<video src="gallery/{n}.mp4" autoplay loop muted '
+                         f'playsinline></video><div>{txt}</div></div>')
+        idx.append(f'<div class="gal grid2">{"".join(cards)}</div>')
     (SITE / "index.html").write_text("\n".join(idx))
     print(f"  built {len(days)} day(s) -> docs/  (index is the full scroll)")
 

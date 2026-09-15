@@ -3,16 +3,21 @@
 <style>
 :root{--bg:#0b0b10;--fg:#e9e6f0;--dim:#8b86a0;--line:#26263a;--card:#15151f}
 body{margin:0 auto;max-width:820px;padding:30px 20px 90px;background:var(--bg);
- color:var(--fg);font:15px/1.7 -apple-system,Segoe UI,Roboto,sans-serif}
-a{color:#8ad7ff} h1{font-size:26px} h2{margin-top:34px;font-size:19px}
-code{font-family:ui-monospace,Menlo,monospace;font-size:13px}
+ color:var(--fg);font:17px/1.75 -apple-system,Segoe UI,Roboto,sans-serif}
+a{color:#8ad7ff} h1{font-size:30px} h2{margin-top:38px;font-size:22px}
+code{font-family:ui-monospace,Menlo,monospace;font-size:14px}
 p code{background:var(--card);padding:1px 5px;border-radius:4px}
 .highlight{background:var(--card);border:1px solid var(--line);
  border-radius:8px;padding:12px 14px;overflow-x:auto;margin:16px 0}
 video{width:52%;border-radius:8px;margin:14px 0;background:#000;display:block}
 @media(max-width:620px){video{width:100%}}
 .back{color:var(--dim);text-decoration:none;font-size:13px}
-.dim{color:var(--dim);font-size:13px}
+.dim{color:var(--dim);font-size:14px}
+.gal{font-size:14px;color:var(--dim)}
+.gal video{width:100%;margin:6px 0 2px}
+.gal h3{font-size:16px;margin:26px 0 2px;color:var(--fg)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:620px){.grid2{grid-template-columns:1fr}}
 table{border-collapse:collapse} td,th{border:1px solid var(--line);padding:5px 9px}
 pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -148,29 +153,8 @@ the entire plane folds into the unit square.</p>
 it looks. A Gaussian has tails: with <code>normal * 3</code> a few of the 150k points sit
 at +-14, and <code>exp(14)</code> is ~1.2 million. Those few points then set the scale
 for every frame, so the other 149,990 collapse into a corner. Measured share
-of the canvas actually lit, at the worst step:</p>
-<table>
-<thead>
-<tr>
-<th>input</th>
-<th>worst step</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>normal * 3</code></td>
-<td>0.1%</td>
-</tr>
-<tr>
-<td>disc, r=3</td>
-<td>10.1%</td>
-</tr>
-<tr>
-<td>uniform square, +-2.5</td>
-<td><strong>23.1%</strong></td>
-</tr>
-</tbody>
-</table>
+of the canvas actually lit at the worst step: <code>normal * 3</code> gives 0.1%, a
+disc of radius 3 gives 10.1%, a uniform square gives <strong>23.1%</strong>.</p>
 <p>Bounded input, no tails, nothing to blow up. <code>exp</code> punishes outliers
 exponentially -- which is the thing to remember well beyond this plot.</p>
 <div class="highlight"><pre><span></span><span class="n">C</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">150_000</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
@@ -209,43 +193,9 @@ a neuron sitting out here learns almost nothing.</p>
 
 <video src="sigmoid_grid.mp4" autoplay loop muted playsinline></video>
 <h2>What I noticed</h2>
-<p>The range at each step, on an input of -8..8:</p>
-<table>
-<thead>
-<tr>
-<th>step</th>
-<th>min</th>
-<th>max</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>input</code></td>
-<td>-8.0000</td>
-<td>8.00</td>
-</tr>
-<tr>
-<td><code>neg</code></td>
-<td>-8.0000</td>
-<td>8.00</td>
-</tr>
-<tr>
-<td><code>exp</code></td>
-<td>0.0003</td>
-<td><strong>2980.96</strong></td>
-</tr>
-<tr>
-<td><code>add</code></td>
-<td>1.0003</td>
-<td>2981.96</td>
-</tr>
-<tr>
-<td><code>div</code></td>
-<td>0.0003</td>
-<td>1.00</td>
-</tr>
-</tbody>
-</table>
+<p>Watching the range at each step: <code>input</code> and <code>neg</code> both span -8 to 8, <code>exp</code>
+blows it out to nearly <strong>3000</strong>, <code>add</code> shifts that to 1..2982, and <code>div</code>
+brings all of it back to 0..1.</p>
 <p><strong>Which op squashes?</strong> <code>div</code>. <code>exp</code> blows the range up to nearly 3000 -- four
 orders of magnitude -- and the divide brings all of it back inside 1. The
 animation makes this obvious: the field goes blinding at <code>exp</code>, then snaps

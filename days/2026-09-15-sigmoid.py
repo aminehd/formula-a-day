@@ -54,13 +54,8 @@ def sigmoid(x):
 # it looks. A Gaussian has tails: with `normal * 3` a few of the 150k points sit
 # at +-14, and `exp(14)` is ~1.2 million. Those few points then set the scale
 # for every frame, so the other 149,990 collapse into a corner. Measured share
-# of the canvas actually lit, at the worst step:
-#
-# | input | worst step |
-# |---|---|
-# | `normal * 3` | 0.1% |
-# | disc, r=3 | 10.1% |
-# | uniform square, +-2.5 | **23.1%** |
+# of the canvas actually lit at the worst step: `normal * 3` gives 0.1%, a
+# disc of radius 3 gives 10.1%, a uniform square gives **23.1%**.
 #
 # Bounded input, no tails, nothing to blow up. `exp` punishes outliers
 # exponentially -- which is the thing to remember well beyond this plot.
@@ -105,15 +100,9 @@ def sigmoid_grid(p):
 # %% [markdown]
 # ## What I noticed
 #
-# The range at each step, on an input of -8..8:
-#
-# | step | min | max |
-# |---|---|---|
-# | `input` | -8.0000 | 8.00 |
-# | `neg` | -8.0000 | 8.00 |
-# | `exp` | 0.0003 | **2980.96** |
-# | `add` | 1.0003 | 2981.96 |
-# | `div` | 0.0003 | 1.00 |
+# Watching the range at each step: `input` and `neg` both span -8 to 8, `exp`
+# blows it out to nearly **3000**, `add` shifts that to 1..2982, and `div`
+# brings all of it back to 0..1.
 #
 # **Which op squashes?** `div`. `exp` blows the range up to nearly 3000 -- four
 # orders of magnitude -- and the divide brings all of it back inside 1. The
