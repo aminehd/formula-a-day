@@ -32,7 +32,7 @@ X = 3 * jnp.sin(4 * _R) * (1 - _R)
 # %%
 # No jax.nn.sigmoid -- that is one opaque primitive. Built from arithmetic it
 # is four steps, and the animation can only show steps that exist.
-@viz(X, palette="neon", size=380, tween=22)
+@viz(X, palette="neon", size=340, tween=36, hold=10, duration=80)
 def sigmoid(x):
     return 1 / (1 + jnp.exp(-x))
 
@@ -61,7 +61,10 @@ def sigmoid(x):
 # %%
 C = jnp.asarray(np.random.default_rng(0).uniform(-2.5, 2.5, size=(150_000, 2)))
 
-@viz(C, palette="bloom", size=460, tween=22, rep="points")
+# tween = interpolation frames per step; duration = ms per frame.
+# Together they set how long you get to actually watch each op.
+@viz(C, palette="bloom", size=360, tween=40, rep="points",
+     hold=10, duration=80)
 def sigmoid_points(p):
     return 1 / (1 + jnp.exp(-p))
 
@@ -87,7 +90,8 @@ def _graph_paper(lines=26, per=1100, ext=6.0):
 
 GP = jnp.asarray(_graph_paper())
 
-@viz(GP, palette="ice", size=520, tween=26, hold=8, rep="points")
+@viz(GP, palette="ice", size=420, tween=36, hold=10, duration=80,
+     rep="points")
 def sigmoid_grid(p):
     return 1 / (1 + jnp.exp(-p))
 
