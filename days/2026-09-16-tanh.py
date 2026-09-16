@@ -133,7 +133,7 @@ def tanh_inout(p):
 
 # %%
 @jaxvis.draw(paper, palette="ice", size=700, tween=30, hold=8, duration=55,
-             rep="points")
+             rep="points", colors=by_radius)
 def sin_grid(p):
     return jnp.sin(p)
 
