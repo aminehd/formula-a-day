@@ -63,17 +63,17 @@ HEAD = """<!doctype html><meta charset=utf-8><title>{title}</title>
 <style>
 /* HackerRank-ish: white page, slate text, green accent, dark code. */
 :root{{--bg:#ffffff;--fg:#39424e;--dim:#6b7f92;--line:#e4e9f0;--card:#f7f9fb;--accent:#1ba94c}}
-body{{margin:0 auto;max-width:1080px;padding:38px 22px 90px;background:var(--bg);
+body{{margin:0 auto;max-width:1040px;padding:30px 22px 70px;background:var(--bg);
  color:var(--fg);
- /* The New Yorker sets its body in Adobe Caslon; Libre Caslon Text is
-    the screen-built revival of the same design. Serifs need a little
-    more size and air than a grotesque to read well. */
- font:400 16px/1.6 'Libre Caslon Text',Georgia,'Times New Roman',serif;
+ /* Typewriter: one monospace face for everything, set small and tight.
+    A single width for prose, headings and code makes the page read like a
+    printed listing rather than a magazine. */
+ font:400 13.5px/1.62 'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
  font-optical-sizing:auto;letter-spacing:-.003em;text-rendering:optimizeLegibility;
  -webkit-font-smoothing:antialiased}}
 /* 45-90 characters is the readable range; 980px of 17.5px text is ~115, so the
    PROSE is capped separately and only the grids use the full width. */
-p,h1,h2,h3,ul,ol,blockquote{{max-width:64ch}}
+p,h1,h2,h3,ul,ol,blockquote{{max-width:74ch}}
 .pair{{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
  gap:20px;align-items:start;margin:20px 0;max-width:none}}
 .pair .code{{margin:0;max-width:none}}
@@ -82,17 +82,16 @@ p,h1,h2,h3,ul,ol,blockquote{{max-width:64ch}}
 a{{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}}
 a:hover{{color:#15843c}}
 .katex-display{{margin:.6em 0 1em;font-size:1.02em}}
-.dayhead{{font-family:'Libre Caslon Text',Georgia,serif;font-size:21px;
- font-weight:700;letter-spacing:-.008em;margin:.1em 0 .5em;color:#1d2429}}
-h1{{font-family:'Libre Caslon Text',Georgia,serif;font-size:27px;
- font-weight:700;letter-spacing:-.012em;line-height:1.2;
- margin:0 0 .45em;color:#1d2429}}
+.dayhead{{font-size:14px;font-weight:600;letter-spacing:.12em;
+ text-transform:uppercase;margin:.1em 0 .9em;color:#1d2429}}
+h1{{font-size:17px;font-weight:600;letter-spacing:.14em;line-height:1.35;
+ margin:0 0 1.1em;color:#1d2429;text-transform:uppercase}}
 h2{{color:#2c3540}}
 h3{{color:#2c3540}}
-h2{{font-family:'Libre Caslon Text',Georgia,serif;margin-top:38px;
- margin-bottom:.3em;font-size:18px;font-weight:700;
- letter-spacing:-.006em;line-height:1.3}}
-p{{margin:0 0 .82em}}
+h2{{margin-top:30px;margin-bottom:.5em;font-size:12.5px;font-weight:600;
+ letter-spacing:.11em;text-transform:uppercase;line-height:1.4;
+ color:#54606b}}
+p{{margin:0 0 .7em}}
 ul,ol{{margin:.4em 0 .9em}}
 li{{margin:.15em 0}}
 code,pre,.highlight{{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-ligatures:none}}
@@ -100,11 +99,11 @@ p code,li code{{background:var(--card);color:#2f6f4f;padding:2px 6px;border:1px 
 /* Bare. No card, no bar, no shadow, no fill -- hairline rules above and
    below, the way a listing sits in a textbook. Colour is nearly absent: the
    syntax carries weight and italics instead. */
-.code{{margin:18px 0;max-width:78ch}}
+.code{{margin:14px 0;max-width:80ch}}
 .code-bar{{display:none}}
 .highlight{{background:none;border:0;border-top:1px solid #e8ecf1;
  border-bottom:1px solid #e8ecf1;border-radius:0;padding:16px 0 16px 2px;
- margin:0;font-size:13px;line-height:1.8;letter-spacing:0;
+ margin:0;font-size:12.5px;line-height:1.66;letter-spacing:0;
  color:#30373f}}
 /* no sideways scrolling: long lines wrap, with the continuation indented so
    you can see it is a continuation */
@@ -112,16 +111,27 @@ p code,li code{{background:var(--card);color:#2f6f4f;padding:2px 6px;border:1px 
    text-indent hits only the first line while padding-left shifts them all --
    which reads as every line but the first being tabbed in. */
 .highlight pre{{white-space:pre-wrap;word-break:break-word;margin:0}}
-.highlight .c,.highlight .c1,.highlight .cm{{font-style:normal;opacity:.8}}
-.highlight .k,.highlight .kn{{font-weight:600}}
+/* neon: highly saturated hues on white. Pale pastels read as washed out at
+   12.5px, so these are pushed to full chroma and kept dark enough to pass
+   contrast on a white ground. */
+.highlight .k,.highlight .kn,.highlight .kc,.highlight .ow{{color:#e6007a;
+ font-weight:600}}
+.highlight .nb,.highlight .bp{{color:#00a3cc}}
+.highlight .nf,.highlight .fm{{color:#7c1fff;font-weight:600}}
+.highlight .s,.highlight .s1,.highlight .s2,.highlight .sa{{color:#00994d}}
+.highlight .mi,.highlight .mf,.highlight .m{{color:#ff6a00}}
+.highlight .o,.highlight .p{{color:#5b6673}}
+.highlight .n{{color:#22272e}}
+.highlight .c,.highlight .c1,.highlight .cm{{color:#8fa0b0;font-style:normal}}
+.highlight .nd{{color:#c400a8;font-weight:600}}
 .highlight pre{{margin:0;background:none}}
 .highlight .c,.highlight .c1,.highlight .cm{{font-style:normal;opacity:.72}}
 video{{width:52%;border-radius:6px;margin:14px 0;background:#0b0b10;display:block;border:1px solid var(--line)}}
 @media(max-width:620px){{video{{width:100%}}}}
 .back{{color:var(--dim);text-decoration:none;font-size:13px}}
-.dim{{color:var(--dim);font-size:12.5px;letter-spacing:.01em;
- font-family:'Inter',-apple-system,sans-serif}}
-.gal h3,.name{{font-family:'Inter',-apple-system,sans-serif}}
+.dim{{color:var(--dim);font-size:11.5px;letter-spacing:.05em}}
+.gal h3{{font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;
+ font-weight:600;margin:14px 0 2px}}
 .gal{{font-size:14px;color:var(--dim)}}
 .gal video{{width:100%;margin:6px 0 2px}}
 .gal h3{{font-size:16px;margin:26px 0 2px;color:var(--fg)}}
@@ -223,8 +233,9 @@ def gallery_html():
     lead = f'<div class="gal grid2">{"".join(cards[:2])}</div>'
     rest = (f'<div class="gal grid4">{"".join(cards[2:])}</div>'
             if len(cards) > 2 else "")
-    return ['<hr style="border:0;border-top:1px solid var(--line);'
-            'margin:64px 0 10px">', head, lead, rest, tail]
+    return [head, lead, rest, tail,
+            '<hr style="border:0;border-top:1px solid var(--line);'
+            'margin:56px 0 10px">']
 
 
 def main():
@@ -248,6 +259,7 @@ def main():
     if intro.exists():
         idx.append(md.markdown(intro.read_text(),
                                extensions=["tables", "fenced_code"]))
+    idx += gallery_html()
     if len(days) > 1:                       # a jump list, once there are a few
         idx.append("<p class=dim>" + " &middot; ".join(
             f'<a href="#{s}">{ti}</a>' for _, s, ti, _ in days) + "</p>")
@@ -259,7 +271,6 @@ def main():
         body = day_body(f, vids, prefix=f"{slug}/", day_dir=SITE / slug)
         idx += [c.replace("<h1>", '<div class=dayhead>')
                  .replace("</h1>", "</div>") for c in body]
-    idx += gallery_html()
     (SITE / "index.html").write_text("\n".join(idx))
     print(f"  built {len(days)} day(s) -> docs/  (index is the full scroll)")
 
