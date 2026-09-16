@@ -1,4 +1,4 @@
-<!doctype html><meta charset=utf-8><title>formula a day</title>
+<!doctype html><meta charset=utf-8><title>tanh</title>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <link rel=preconnect href="https://fonts.gstatic.com" crossorigin>
 <link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -149,25 +149,7 @@ addEventListener('click', e => {
 });
 </script>
 
-<h1>a formula a day</h1>
-<p>I made a framework for JAX visualisation — you write a function, it animates
-every intermediate value. Then I figured out you can make really beautiful
-images with it.</p>
-<p>I think if you could <em>see</em> your craft, it just adds one more stream of data.
-Knowing what my formula looks like seems good for humans — and maybe as an
-agentic knowledge base too. Imagine a proof agent that can reason in shape and
-form.</p>
-<p>One ML building block a day: the formula, what it does, and every step animated.</p>
-<h2>Just because they're beautiful</h2>
-
-<div class="gal grid2"><div><h3>shear</h3><video src="gallery/shear.mp4?v=1789587474" autoplay loop muted playsinline></video><div></div></div><div><h3>fold</h3><video src="gallery/fold.mp4?v=1789587490" autoplay loop muted playsinline></video><div></div></div></div>
-<div class="gal grid4"><div><h3>squaring</h3><video src="gallery/squaring.mp4?v=1789590597" autoplay loop muted playsinline></video><div></div></div><div><h3>winding</h3><video src="gallery/winding.mp4?v=1789588373" autoplay loop muted playsinline></video><div></div></div><div><h3>blooming</h3><video src="gallery/blooming.mp4?v=1789588477" autoplay loop muted playsinline></video><div></div></div><div><h3>expanding</h3><video src="gallery/expanding.mp4?v=1789588485" autoplay loop muted playsinline></video><div></div></div><div><h3>drifting</h3><video src="gallery/drifting.mp4?v=1789490229" autoplay loop muted playsinline></video><div></div></div><div><h3>projecting</h3><video src="gallery/projecting.mp4?v=1789490229" autoplay loop muted playsinline></video><div></div></div><div><h3>flattening</h3><video src="gallery/flattening.mp4?v=1789589035" autoplay loop muted playsinline></video><div></div></div><div><h3>collapsing</h3><video src="gallery/collapsing.mp4?v=1789588780" autoplay loop muted playsinline></video><div></div></div></div>
-
-<p>I want to explore the useful ones in ML with this framework. I feel like one
-day there'll be a formula in my studies that actually looks nice.</p>
-<hr style="border:0;border-top:1px solid var(--line);margin:52px 0 10px">
-<hr id="2026-09-16-tanh" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
-<div class=dim>2026-09-16 &middot; <a class=back href="2026-09-16-tanh/index.html">permalink</a></div>
+<a class=back href="../index.html">&larr; all formulas</a>
 <h1>Tanh</h1>
 <p>$$\tanh(x) = \frac{e^{x} - e^{-x}}{e^{x} + e^{-x}}$$</p>
 <p><em>Write-up goes here.</em></p>
@@ -195,7 +177,7 @@ day there'll be a formula in my studies that actually looks nice.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">tanh_cloud</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-09-16-tanh/tanh_cloud.mp4?v=1789584970" autoplay loop muted playsinline></video></div>
+</div><video src="tanh_cloud.mp4?v=1789584970" autoplay loop muted playsinline></video></div>
 <h2>sin</h2>
 <p><em>Notes.</em></p>
 <p>Now sinus</p>
@@ -203,7 +185,7 @@ day there'll be a formula in my studies that actually looks nice.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">sin_cloud</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-09-16-tanh/sin_cloud.mp4?v=1789586101" autoplay loop muted playsinline></video></div>
+</div><video src="sin_cloud.mp4?v=1789586101" autoplay loop muted playsinline></video></div>
 <h2>As a field</h2>
 <p><em>Notes.</em></p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="c1"># A lattice, not rings. `%` wraps each axis into repeating cells; subtracting</span>
@@ -221,7 +203,7 @@ day there'll be a formula in my studies that actually looks nice.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-09-16-tanh/tanh.mp4?v=1789584970" autoplay loop muted playsinline></video></div>
+</div><video src="tanh.mp4?v=1789584970" autoplay loop muted playsinline></video></div>
 <h2>Lets just multiply</h2>
 <p><em>Notes.</em></p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
@@ -229,7 +211,7 @@ day there'll be a formula in my studies that actually looks nice.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="mi">20</span> <span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="mi">4</span>
 </pre></div>
-</div><video src="2026-09-16-tanh/multiply.mp4?v=1789589887" autoplay loop muted playsinline></video></div>
+</div><video src="multiply.mp4?v=1789589887" autoplay loop muted playsinline></video></div>
 <h2>As points</h2>
 <p><em>Notes.</em></p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">graph_paper</span><span class="p">(</span><span class="n">lines</span><span class="o">=</span><span class="mi">26</span><span class="p">,</span> <span class="n">per</span><span class="o">=</span><span class="mi">1100</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="mf">3.0</span><span class="p">):</span>
@@ -249,7 +231,7 @@ day there'll be a formula in my studies that actually looks nice.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">tanh_grid</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-09-16-tanh/tanh_grid.mp4?v=1789584970" autoplay loop muted playsinline></video></div>
+</div><video src="tanh_grid.mp4?v=1789584970" autoplay loop muted playsinline></video></div>
 <h2>Coloured in and out</h2>
 <p><em>Notes.</em></p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jaxvis.render</span><span class="w"> </span><span class="kn">import</span> <span class="n">ramp</span>
@@ -268,7 +250,7 @@ day there'll be a formula in my studies that actually looks nice.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">tanh_inout</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-09-16-tanh/tanh_inout.mp4?v=1789584971" autoplay loop muted playsinline></video></div>
+</div><video src="tanh_inout.mp4?v=1789584971" autoplay loop muted playsinline></video></div>
 <h2>just try sinus</h2>
 <p><em>Notes.</em></p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">paper</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ice"</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">700</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">hold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">55</span><span class="p">,</span>
@@ -276,4 +258,4 @@ day there'll be a formula in my studies that actually looks nice.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">sin_grid</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-09-16-tanh/sin_grid.mp4?v=1789592439" autoplay loop muted playsinline></video></div>
+</div><video src="sin_grid.mp4?v=1789592439" autoplay loop muted playsinline></video></div>
