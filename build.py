@@ -207,9 +207,8 @@ def gallery_html():
     lead = f'<div class="gal grid2">{"".join(cards[:2])}</div>'
     rest = (f'<div class="gal grid4">{"".join(cards[2:])}</div>'
             if len(cards) > 2 else "")
-    return [head, lead, rest, tail,
-            '<hr style="border:0;border-top:1px solid var(--line);'
-            'margin:52px 0 10px">']
+    return ['<hr style="border:0;border-top:1px solid var(--line);'
+            'margin:64px 0 10px">', head, lead, rest, tail]
 
 
 def main():
@@ -233,7 +232,6 @@ def main():
     if intro.exists():
         idx.append(md.markdown(intro.read_text(),
                                extensions=["tables", "fenced_code"]))
-    idx += gallery_html()
     if len(days) > 1:                       # a jump list, once there are a few
         idx.append("<p class=dim>" + " &middot; ".join(
             f'<a href="#{s}">{ti}</a>' for _, s, ti, _ in days) + "</p>")
@@ -243,6 +241,7 @@ def main():
         idx.append(f'<div class=dim>{slug.rsplit("-", 1)[0][:10]} &middot; '
                    f'<a class=back href="{slug}/index.html">permalink</a></div>')
         idx += day_body(f, vids, prefix=f"{slug}/", day_dir=SITE / slug)
+    idx += gallery_html()
     (SITE / "index.html").write_text("\n".join(idx))
     print(f"  built {len(days)} day(s) -> docs/  (index is the full scroll)")
 
