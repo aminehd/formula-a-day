@@ -11,7 +11,10 @@
 # %%
 import jax.numpy as jnp
 import numpy as np
-from fad import viz
+import fad
+import jaxvis
+
+fad.day(__file__)
 
 # Rings that fade outward. A plain ramp would put most of the field in exp's
 # extremes, and since the heatmap normalises to the max, the rest renders
@@ -38,7 +41,7 @@ X = 3 * jnp.sin(4 * _R) * (1 - _R)
 # discrete splatted particles. This puts that texture back.
 # Bumped to 0.26 because the render is downscaled 680 -> ~420 on the page,
 # which averages fine grain away.
-@viz(X, palette="ultra", size=680, tween=30, hold=8, duration=55,
+@jaxvis.draw(X, palette="ultra", size=680, tween=30, hold=8, duration=55,
      rep_kw={"grain": 0.26})
 def sigmoid(x):
     return 1 / (1 + jnp.exp(-x))
@@ -60,7 +63,7 @@ def sigmoid(x):
 # +-25, and exp(25) is 7e10, so a few pixels blacken the whole frame.
 N = jnp.asarray(np.random.default_rng(3).uniform(-3.5, 3.5, size=(140, 140)))
 
-@viz(N, palette="vapor", size=680, tween=30, hold=8, duration=55,
+@jaxvis.draw(N, palette="vapor", size=680, tween=30, hold=8, duration=55,
      rep_kw={"grain": 0.26})
 def sigmoid_noise(x):
     return 1 / (1 + jnp.exp(-x))
@@ -87,7 +90,7 @@ C = jnp.asarray(np.random.default_rng(0).uniform(-2.5, 2.5, size=(150_000, 2)))
 
 # tween = interpolation frames per step; duration = ms per frame.
 # Together they set how long you get to actually watch each op.
-@viz(C, palette="bloom", size=680, tween=32, rep="points",
+@jaxvis.draw(C, palette="bloom", size=680, tween=32, rep="points",
      hold=8, duration=55)
 def sigmoid_points(p):
     return 1 / (1 + jnp.exp(-p))
@@ -114,7 +117,7 @@ def _graph_paper(lines=26, per=1100, ext=6.0):
 
 GP = jnp.asarray(_graph_paper())
 
-@viz(GP, palette="ice", size=760, tween=30, hold=8, duration=55,
+@jaxvis.draw(GP, palette="ice", size=760, tween=30, hold=8, duration=55,
      rep="points")
 def sigmoid_grid(p):
     return 1 / (1 + jnp.exp(-p))

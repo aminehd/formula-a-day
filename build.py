@@ -16,7 +16,7 @@ from pygments.lexers import PythonLexer
 
 ROOT = Path(__file__).resolve().parent
 DAYS, SITE = ROOT / "days", ROOT / "docs"
-FMT = HtmlFormatter(style="monokai", nowrap=False)
+FMT = HtmlFormatter(style="friendly", nowrap=False)
 
 
 def cells(text):
@@ -53,43 +53,115 @@ def to_mp4(d):
 
 HEAD = """<!doctype html><meta charset=utf-8><title>{title}</title>
 <meta name=viewport content="width=device-width,initial-scale=1">
+<link rel=preconnect href="https://fonts.gstatic.com" crossorigin>
+<link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
-:root{{--bg:#0b0b10;--fg:#e9e6f0;--dim:#8b86a0;--line:#26263a;--card:#15151f}}
-body{{margin:0 auto;max-width:820px;padding:30px 20px 90px;background:var(--bg);
- color:var(--fg);font:17px/1.75 -apple-system,Segoe UI,Roboto,sans-serif}}
-a{{color:#8ad7ff}} h1{{font-size:30px}} h2{{margin-top:38px;font-size:22px}}
-code{{font-family:ui-monospace,Menlo,monospace;font-size:14px}}
-p code{{background:var(--card);padding:1px 5px;border-radius:4px}}
-.highlight{{background:var(--card);border:1px solid var(--line);
- border-radius:8px;padding:12px 14px;overflow-x:auto;margin:16px 0}}
-video{{width:52%;border-radius:8px;margin:14px 0;background:#000;display:block}}
+/* HackerRank-ish: white page, slate text, green accent, dark code. */
+:root{{--bg:#ffffff;--fg:#39424e;--dim:#6b7f92;--line:#e4e9f0;--card:#f7f9fb;--accent:#1ba94c}}
+body{{margin:0 auto;max-width:1080px;padding:38px 22px 90px;background:var(--bg);
+ color:var(--fg);font:400 16px/1.62 'Inter',-apple-system,Segoe UI,Roboto,sans-serif;
+ font-optical-sizing:auto;letter-spacing:-.003em;text-rendering:optimizeLegibility;
+ -webkit-font-smoothing:antialiased}}
+/* 45-90 characters is the readable range; 980px of 17.5px text is ~115, so the
+   PROSE is capped separately and only the grids use the full width. */
+p,h1,h2,h3,ul,ol,blockquote{{max-width:66ch}}
+.pair{{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+ gap:20px;align-items:start;margin:20px 0;max-width:none}}
+.pair .code{{margin:0;max-width:none}}
+.pair video{{width:100%;margin:0}}
+@media(max-width:780px){{.pair{{grid-template-columns:1fr}}}}
+a{{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}}
+a:hover{{color:#15843c}}
+h1{{font-size:29px;font-weight:600;letter-spacing:-.022em;line-height:1.18;
+ margin:0 0 .45em;color:#2c3540}}
+h2{{color:#2c3540}}
+h3{{color:#2c3540}}
+h2{{margin-top:34px;margin-bottom:.35em;font-size:19px;font-weight:600;
+ letter-spacing:-.012em;line-height:1.3}}
+p{{margin:0 0 .82em}}
+ul,ol{{margin:.4em 0 .9em}}
+li{{margin:.15em 0}}
+code,pre,.highlight{{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-ligatures:none}}
+p code,li code{{background:var(--card);color:#2f6f4f;padding:2px 6px;border:1px solid var(--line);border-radius:3px;font-size:13px}}
+/* Bare. No card, no bar, no shadow, no fill -- hairline rules above and
+   below, the way a listing sits in a textbook. Colour is nearly absent: the
+   syntax carries weight and italics instead. */
+.code{{margin:18px 0;max-width:78ch}}
+.code-bar{{display:none}}
+.highlight{{background:none;border:0;border-top:1px solid #e8ecf1;
+ border-bottom:1px solid #e8ecf1;border-radius:0;padding:16px 0 16px 2px;
+ margin:0;font-size:13px;line-height:1.8;letter-spacing:0;
+ color:#30373f}}
+/* no sideways scrolling: long lines wrap, with the continuation indented so
+   you can see it is a continuation */
+/* No hanging indent: inside a <pre> the whole block is one box, so
+   text-indent hits only the first line while padding-left shifts them all --
+   which reads as every line but the first being tabbed in. */
+.highlight pre{{white-space:pre-wrap;word-break:break-word;margin:0}}
+.highlight .c,.highlight .c1,.highlight .cm{{font-style:normal;opacity:.8}}
+.highlight .k,.highlight .kn{{font-weight:600}}
+.highlight pre{{margin:0;background:none}}
+.highlight .c,.highlight .c1,.highlight .cm{{font-style:normal;opacity:.72}}
+video{{width:52%;border-radius:6px;margin:14px 0;background:#0b0b10;display:block;border:1px solid var(--line)}}
 @media(max-width:620px){{video{{width:100%}}}}
 .back{{color:var(--dim);text-decoration:none;font-size:13px}}
-.dim{{color:var(--dim);font-size:14px}}
+.dim{{color:var(--dim);font-size:13.5px;letter-spacing:0}}
 .gal{{font-size:14px;color:var(--dim)}}
 .gal video{{width:100%;margin:6px 0 2px}}
 .gal h3{{font-size:16px;margin:26px 0 2px;color:var(--fg)}}
 .grid2{{display:grid;grid-template-columns:1fr 1fr;gap:20px}}
-@media(max-width:620px){{.grid2{{grid-template-columns:1fr}}}}
+.grid4{{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:22px}}
+.grid4 h3{{font-size:13px;margin:16px 0 2px}}
+@media(max-width:860px){{.grid4{{grid-template-columns:1fr 1fr}}}}
+@media(max-width:620px){{.grid2,.grid4{{grid-template-columns:1fr}}}}
 table{{border-collapse:collapse}} td,th{{border:1px solid var(--line);padding:5px 9px}}
 {pyg}
 </style>
+<script>
+addEventListener('click', e => {{
+  const b = e.target.closest('.code-bar button'); if (!b) return;
+  const code = b.closest('.code').querySelector('pre').innerText;
+  navigator.clipboard.writeText(code).then(() => {{
+    b.textContent = 'copied'; b.classList.add('ok');
+    setTimeout(() => {{ b.textContent = 'copy'; b.classList.remove('ok'); }}, 1400);
+  }});
+}});
+</script>
 """
 
 
-def day_body(f, vids, prefix=""):
+def stamp(name, sub=None):
+    "Modification time of a video, used to bust the browser cache."
+    d = SITE / sub if sub else _CUR[0]
+    f = d / f"{name}.mp4"
+    return int(f.stat().st_mtime) if f.exists() else 0
+
+
+_CUR = [SITE]
+
+
+def day_body(f, vids, prefix="", day_dir=None):
     """The day's content as HTML chunks. Shared by its own page and the index,
     so the long scroll and the permalink can never drift apart."""
+    _CUR[0] = day_dir or SITE
     out = []
     for kind, body in cells(f.read_text()):
         if kind == "md":
             out.append(md.markdown(body, extensions=["tables", "fenced_code"]))
         else:
-            out.append(highlight(body, PythonLexer(), FMT))
-            for fn in re.findall(r"^def (\w+)", body, re.M):
-                if f"{fn}.mp4" in vids:
-                    out.append(f'<video src="{prefix}{fn}.mp4" autoplay loop '
-                               f'muted playsinline></video>')
+            code = ('<div class=code>'
+                    + highlight(body, PythonLexer(), FMT) + '</div>')
+            # ?v=<mtime>: the page reloads but the browser reuses a cached
+            # video when the URL is unchanged. Stamping it makes every
+            # re-render a new URL.
+            clips = [f'<video src="{prefix}{fn}.mp4?v={stamp(fn)}" autoplay '
+                     f'loop muted playsinline></video>'
+                     for fn in re.findall(r"^def (\w+)", body, re.M)
+                     if f"{fn}.mp4" in vids]
+            # a cell that renders something shows the code and the clip as one
+            # row; a cell that renders nothing is just code
+            out.append(f'<div class=pair>{code}{"".join(clips)}</div>'
+                       if clips else code)
     return out
 
 
@@ -102,7 +174,7 @@ def render_day(f):
     vids = sorted(p.name for p in d.glob("*.mp4"))
     html = [HEAD.format(title=title, pyg=FMT.get_style_defs(".highlight")),
             '<a class=back href="../index.html">&larr; all formulas</a>']
-    html += day_body(f, vids)
+    html += day_body(f, vids, day_dir=d)
     (d / "index.html").write_text("\n".join(html))
     return slug, title, vids, made
 
@@ -129,15 +201,25 @@ def gallery_html():
                         rf"(.*?)</li>", body, re.S)
         txt = re.sub(r"<[^>]+>", "", cap.group(1)).strip() if cap else ""
         cards.append(f'<div><h3>{n}</h3>'
-                     f'<video src="gallery/{n}.mp4" autoplay loop muted '
+                     f'<video src="gallery/{n}.mp4?v={stamp(n, "gallery")}" '
+                     f'autoplay loop muted '
                      f'playsinline></video><div>{txt}</div></div>')
-    return [head, f'<div class="gal grid2">{"".join(cards)}</div>', tail,
+    lead = f'<div class="gal grid2">{"".join(cards[:2])}</div>'
+    rest = (f'<div class="gal grid4">{"".join(cards[2:])}</div>'
+            if len(cards) > 2 else "")
+    return [head, lead, rest, tail,
             '<hr style="border:0;border-top:1px solid var(--line);'
             'margin:52px 0 10px">']
 
 
 def main():
+    # One build at a time. The dev server rebuilds on every save, so a manual
+    # `python build.py` can land mid-convert -- and to_mp4 DELETES the GIF
+    # after converting it, so the loser of the race finds nothing there.
+    import fcntl
     SITE.mkdir(exist_ok=True)
+    lock = open(ROOT / ".build.lock", "w")
+    fcntl.flock(lock, fcntl.LOCK_EX)
     days, rows = [], []
     for f in sorted(DAYS.glob("*.py"), reverse=True):
         slug, title, vids, made = render_day(f)
@@ -160,7 +242,7 @@ def main():
                    f'var(--line);margin:46px 0 22px">')
         idx.append(f'<div class=dim>{slug.rsplit("-", 1)[0][:10]} &middot; '
                    f'<a class=back href="{slug}/index.html">permalink</a></div>')
-        idx += day_body(f, vids, prefix=f"{slug}/")
+        idx += day_body(f, vids, prefix=f"{slug}/", day_dir=SITE / slug)
     (SITE / "index.html").write_text("\n".join(idx))
     print(f"  built {len(days)} day(s) -> docs/  (index is the full scroll)")
 
