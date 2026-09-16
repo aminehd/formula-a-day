@@ -54,6 +54,11 @@ def to_mp4(d):
 HEAD = """<!doctype html><meta charset=utf-8><title>{title}</title>
 <meta name=viewport content="width=device-width,initial-scale=1">
 <link rel=preconnect href="https://fonts.gstatic.com" crossorigin>
+<link rel=stylesheet href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+ onload="renderMathInElement(document.body,{{delimiters:[
+  {{left:'$$',right:'$$',display:true}},{{left:'$',right:'$',display:false}}]}})"></script>
 <link rel=stylesheet href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 /* HackerRank-ish: white page, slate text, green accent, dark code. */
@@ -76,6 +81,9 @@ p,h1,h2,h3,ul,ol,blockquote{{max-width:64ch}}
 @media(max-width:780px){{.pair{{grid-template-columns:1fr}}}}
 a{{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}}
 a:hover{{color:#15843c}}
+.katex-display{{margin:.6em 0 1em;font-size:1.02em}}
+.dayhead{{font-family:'Libre Caslon Text',Georgia,serif;font-size:21px;
+ font-weight:700;letter-spacing:-.008em;margin:.1em 0 .5em;color:#1d2429}}
 h1{{font-family:'Libre Caslon Text',Georgia,serif;font-size:27px;
  font-weight:700;letter-spacing:-.012em;line-height:1.2;
  margin:0 0 .45em;color:#1d2429}}
@@ -248,7 +256,9 @@ def main():
                    f'var(--line);margin:46px 0 22px">')
         idx.append(f'<div class=dim>{slug.rsplit("-", 1)[0][:10]} &middot; '
                    f'<a class=back href="{slug}/index.html">permalink</a></div>')
-        idx += day_body(f, vids, prefix=f"{slug}/", day_dir=SITE / slug)
+        body = day_body(f, vids, prefix=f"{slug}/", day_dir=SITE / slug)
+        idx += [c.replace("<h1>", '<div class=dayhead>')
+                 .replace("</h1>", "</div>") for c in body]
     idx += gallery_html()
     (SITE / "index.html").write_text("\n".join(idx))
     print(f"  built {len(days)} day(s) -> docs/  (index is the full scroll)")
