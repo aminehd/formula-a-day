@@ -74,10 +74,10 @@ body{{margin:0 auto;max-width:1040px;padding:30px 22px 70px;background:var(--bg)
 /* 45-90 characters is the readable range; 980px of 17.5px text is ~115, so the
    PROSE is capped separately and only the grids use the full width. */
 p,h1,h2,h3,ul,ol,blockquote{{max-width:74ch}}
-.pair{{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+.pair{{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);
  gap:20px;align-items:start;margin:20px 0;max-width:none}}
 .pair .code{{margin:0;max-width:none}}
-.pair video{{width:100%;margin:0}}
+.pair video{{width:100%;margin:0;justify-self:end}}
 @media(max-width:780px){{.pair{{grid-template-columns:1fr}}}}
 a{{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}}
 a:hover{{color:#15843c}}
@@ -95,7 +95,7 @@ p{{margin:0 0 .7em}}
 ul,ol{{margin:.4em 0 .9em}}
 li{{margin:.15em 0}}
 code,pre,.highlight{{font-family:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-ligatures:none}}
-p code,li code{{background:var(--card);color:#2f6f4f;padding:2px 6px;border:1px solid var(--line);border-radius:3px;font-size:13px}}
+p code,li code{{background:var(--card);color:#2f6f4f;padding:2px 6px;border:1px solid var(--line);border-radius:3px;font-size:12px}}
 /* Bare. No card, no bar, no shadow, no fill -- hairline rules above and
    below, the way a listing sits in a textbook. Colour is nearly absent: the
    syntax carries weight and italics instead. */
@@ -103,7 +103,7 @@ p code,li code{{background:var(--card);color:#2f6f4f;padding:2px 6px;border:1px 
 .code-bar{{display:none}}
 .highlight{{background:none;border:0;border-top:1px solid #e8ecf1;
  border-bottom:1px solid #e8ecf1;border-radius:0;padding:16px 0 16px 2px;
- margin:0;font-size:12.5px;line-height:1.66;letter-spacing:0;
+ margin:0;font-size:11px;line-height:1.62;letter-spacing:0;
  color:#30373f}}
 /* no sideways scrolling: long lines wrap, with the continuation indented so
    you can see it is a continuation */
@@ -112,7 +112,7 @@ p code,li code{{background:var(--card);color:#2f6f4f;padding:2px 6px;border:1px 
    which reads as every line but the first being tabbed in. */
 .highlight pre{{white-space:pre-wrap;word-break:break-word;margin:0}}
 /* neon: highly saturated hues on white. Pale pastels read as washed out at
-   12.5px, so these are pushed to full chroma and kept dark enough to pass
+   11px, so these are pushed to full chroma and kept dark enough to pass
    contrast on a white ground. */
 .highlight .k,.highlight .kn,.highlight .kc,.highlight .ow{{color:#e6007a;
  font-weight:600}}
@@ -126,7 +126,7 @@ p code,li code{{background:var(--card);color:#2f6f4f;padding:2px 6px;border:1px 
 .highlight .nd{{color:#c400a8;font-weight:600}}
 .highlight pre{{margin:0;background:none}}
 .highlight .c,.highlight .c1,.highlight .cm{{font-style:normal;opacity:.72}}
-video{{width:52%;border-radius:6px;margin:14px 0;background:#0b0b10;display:block;border:1px solid var(--line)}}
+video{{width:40%;border-radius:6px;margin:14px 0;background:#0b0b10;display:block;border:1px solid var(--line)}}
 @media(max-width:620px){{video{{width:100%}}}}
 .back{{color:var(--dim);text-decoration:none;font-size:13px}}
 .dim{{color:var(--dim);font-size:11.5px;letter-spacing:.05em}}
