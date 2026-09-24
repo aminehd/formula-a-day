@@ -213,7 +213,7 @@ forces that separate oil from water, aimed at a circle.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">a_circle_from_noise</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">))</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">smooth</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </pre></div>
-</div><video src="a_circle_from_noise.mp4?v=1790264393" autoplay loop muted playsinline></video></div>
+</div><video src="a_circle_from_noise.mp4?v=1790269854" autoplay loop muted playsinline></video></div>
 <h2>Cross-entropy</h2>
 <p>$$z \leftarrow z + \eta\,(y - \sigma(z))$$</p>
 <p>Drop the neighbour term. Every pixel now solves its own problem with no idea
@@ -225,7 +225,7 @@ because nothing in the update ever compares two pixels.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">cross_entropy</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
 </pre></div>
-</div><video src="cross_entropy.mp4?v=1790264394" autoplay loop muted playsinline></video></div>
+</div><video src="cross_entropy.mp4?v=1790269855" autoplay loop muted playsinline></video></div>
 <h2>Heat equation</h2>
 <p>$$z \leftarrow z + \eta\lambda\,\nabla^2 z$$</p>
 <p>The other half, started from a clean circle and run twenty times longer.
@@ -238,7 +238,7 @@ bleeding. Left alone this term does not build anything -- it erases.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">heat_equation</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="mf">0.24</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </pre></div>
-</div><video src="heat_equation.mp4?v=1790264394" autoplay loop muted playsinline></video></div>
+</div><video src="heat_equation.mp4?v=1790269856" autoplay loop muted playsinline></video></div>
 <h2>No target at all</h2>
 <p>$$z \leftarrow z + \eta\,(z - z^3) + \eta\lambda\,\nabla^2 z$$</p>
 <p>Swap the label for a term that pushes each pixel away from zero, toward
@@ -251,4 +251,4 @@ The speckle still coarsens into domains, and they keep eating each other.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">no_target_at_all</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">z</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">smooth</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </pre></div>
-</div><video src="no_target_at_all.mp4?v=1790264395" autoplay loop muted playsinline></video></div>
+</div><video src="no_target_at_all.mp4?v=1790269856" autoplay loop muted playsinline></video></div>

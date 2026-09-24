@@ -186,93 +186,15 @@ form.</p>
 <p>One ML building block a day: the formula, what it does, and every step animated.</p>
 <h2>Just because they're beautiful</h2>
 
-<div class="gal grid2"><div><h3>shear</h3><video src="gallery/shear.mp4?v=1789587474" autoplay loop muted playsinline></video><div></div></div><div><h3>fold</h3><video src="gallery/fold.mp4?v=1789587490" autoplay loop muted playsinline></video><div></div></div></div>
-<div class="gal grid4"><div><h3>squaring</h3><video src="gallery/squaring.mp4?v=1789590597" autoplay loop muted playsinline></video><div></div></div><div><h3>winding</h3><video src="gallery/winding.mp4?v=1789588373" autoplay loop muted playsinline></video><div></div></div><div><h3>blooming</h3><video src="gallery/blooming.mp4?v=1789588477" autoplay loop muted playsinline></video><div></div></div><div><h3>expanding</h3><video src="gallery/expanding.mp4?v=1789588485" autoplay loop muted playsinline></video><div></div></div><div><h3>drifting</h3><video src="gallery/drifting.mp4?v=1789490229" autoplay loop muted playsinline></video><div></div></div><div><h3>projecting</h3><video src="gallery/projecting.mp4?v=1789490229" autoplay loop muted playsinline></video><div></div></div><div><h3>flattening</h3><video src="gallery/flattening.mp4?v=1789589035" autoplay loop muted playsinline></video><div></div></div><div><h3>collapsing</h3><video src="gallery/collapsing.mp4?v=1789588780" autoplay loop muted playsinline></video><div></div></div></div>
+<div class="gal grid2"><div><h3>shear</h3><video src="gallery/shear.mp4?v=1790269652" autoplay loop muted playsinline></video><div></div></div><div><h3>fold</h3><video src="gallery/fold.mp4?v=1790269652" autoplay loop muted playsinline></video><div></div></div></div>
+<div class="gal grid4"><div><h3>squaring</h3><video src="gallery/squaring.mp4?v=1790269652" autoplay loop muted playsinline></video><div></div></div><div><h3>winding</h3><video src="gallery/winding.mp4?v=1790269652" autoplay loop muted playsinline></video><div></div></div><div><h3>blooming</h3><video src="gallery/blooming.mp4?v=1790269652" autoplay loop muted playsinline></video><div></div></div><div><h3>expanding</h3><video src="gallery/expanding.mp4?v=1790269652" autoplay loop muted playsinline></video><div></div></div><div><h3>drifting</h3><video src="gallery/drifting.mp4?v=1790269652" autoplay loop muted playsinline></video><div></div></div><div><h3>projecting</h3><video src="gallery/projecting.mp4?v=1790269652" autoplay loop muted playsinline></video><div></div></div><div><h3>flattening</h3><video src="gallery/flattening.mp4?v=1790269652" autoplay loop muted playsinline></video><div></div></div><div><h3>collapsing</h3><video src="gallery/collapsing.mp4?v=1790269652" autoplay loop muted playsinline></video><div></div></div></div>
 
 <p>I want to explore the useful ones in ML with this framework. I feel like one
 day there'll be a formula in my studies that actually looks nice.</p>
 <hr style="border:0;border-top:1px solid var(--line);margin:56px 0 10px">
-<p class=dim><a href="#2026-09-23-gradients">gradients</a> &middot; <a href="#2026-09-19-cdf">cdf</a> &middot; <a href="#2026-09-17-outliers">outliers</a> &middot; <a href="#2026-09-16-distributions">distributions</a></p>
-<hr id="2026-09-23-gradients" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
-<div class=dim>2026-09-23 &middot; <a class=back href="2026-09-23-gradients/index.html">permalink</a></div>
-<div class=dayhead>Gradients</div>
-<p><em>Write-up goes here.</em></p>
-<div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">jaxvis</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">fad</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">jaxvis.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">grid</span>
-
-<span class="n">fad</span><span class="o">.</span><span class="n">day</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
-</pre></div>
-</div>
-<h2>A circle out of noise</h2>
-<p>$$z \leftarrow z + \eta\,(y - \sigma(z)) + \eta\lambda\,\nabla^2 z$$</p>
-<p>Start from pure noise and descend on two terms at once: one pulls every
-pixel toward its label, the other punishes disagreement with its neighbours.
-The speckle coarsens, a disc surfaces, and the edge tightens. The same two
-forces that separate oil from water, aimed at a circle.</p>
-<p><em>Notes.</em></p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">gx</span><span class="p">,</span> <span class="n">gy</span> <span class="o">=</span> <span class="n">grid</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
-<span class="n">target</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">gx</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">gy</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">0.55</span><span class="p">)</span>
-                     <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">))</span>
-<span class="n">noise</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span> <span class="o">*</span> <span class="mf">2.5</span><span class="p">)</span>
-
-<span class="n">lr</span><span class="p">,</span> <span class="n">smooth</span> <span class="o">=</span> <span class="mf">0.06</span><span class="p">,</span> <span class="mf">3.0</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">lap</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span>
-            <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">a</span><span class="p">)</span>
-
-
-<span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw_sim</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">noise</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span>
-                 <span class="n">show</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">grain</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">a_circle_from_noise</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">))</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">smooth</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-</pre></div>
-</div><video src="2026-09-23-gradients/a_circle_from_noise.mp4?v=1790264393" autoplay loop muted playsinline></video></div>
-<h2>Cross-entropy</h2>
-<p>$$z \leftarrow z + \eta\,(y - \sigma(z))$$</p>
-<p>Drop the neighbour term. Every pixel now solves its own problem with no idea
-what is next to it. The disc still arrives -- and stays grainy forever,
-because nothing in the update ever compares two pixels.</p>
-<p><em>Notes.</em></p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw_sim</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">noise</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span>
-                 <span class="n">show</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">grain</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">cross_entropy</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
-</pre></div>
-</div><video src="2026-09-23-gradients/cross_entropy.mp4?v=1790264394" autoplay loop muted playsinline></video></div>
-<h2>Heat equation</h2>
-<p>$$z \leftarrow z + \eta\lambda\,\nabla^2 z$$</p>
-<p>The other half, started from a clean circle and run twenty times longer.
-With no label to hold it in place the edge bleeds outward and keeps
-bleeding. Left alone this term does not build anything -- it erases.</p>
-<p><em>Notes.</em></p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw_sim</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">target</span> <span class="o">*</span> <span class="mf">6.0</span> <span class="o">-</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                 <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
-                 <span class="n">grain</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">heat_equation</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="mf">0.24</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-</pre></div>
-</div><video src="2026-09-23-gradients/heat_equation.mp4?v=1790264394" autoplay loop muted playsinline></video></div>
-<h2>No target at all</h2>
-<p>$$z \leftarrow z + \eta\,(z - z^3) + \eta\lambda\,\nabla^2 z$$</p>
-<p>Swap the label for a term that pushes each pixel away from zero, toward
-either $+1$ or $-1$, and keep the smoothing. Nothing is being fitted now.
-The speckle still coarsens into domains, and they keep eating each other.</p>
-<p><em>Notes.</em></p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw_sim</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">noise</span> <span class="o">*</span> <span class="mf">0.04</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                 <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
-                 <span class="n">grain</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">no_target_at_all</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">z</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">smooth</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-</pre></div>
-</div><video src="2026-09-23-gradients/no_target_at_all.mp4?v=1790264395" autoplay loop muted playsinline></video></div>
-<hr id="2026-09-19-cdf" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
-<div class=dim>2026-09-19 &middot; <a class=back href="2026-09-19-cdf/index.html">permalink</a></div>
+<p class=dim><a href="#2026-09-23-cdf">cdf</a> &middot; <a href="#2026-09-19-gradients">gradients</a> &middot; <a href="#2026-09-17-outliers">outliers</a> &middot; <a href="#2026-09-16-distributions">distributions</a></p>
+<hr id="2026-09-23-cdf" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
+<div class=dim>2026-09-23 &middot; <a class=back href="2026-09-23-cdf/index.html">permalink</a></div>
 <div class=dayhead>Between uniform and Gaussian</div>
 <p><em>Write-up goes here.</em></p>
 <div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
@@ -311,7 +233,7 @@ square: the density flattens, not just the outline.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_uniform</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">jax</span><span class="o">.</span><span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">erf</span><span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">))</span>
 </pre></div>
-</div><video src="2026-09-19-cdf/to_uniform.mp4?v=1790263839" autoplay loop muted playsinline></video></div>
+</div><video src="2026-09-23-cdf/to_uniform.mp4?v=1790269831" autoplay loop muted playsinline></video></div>
 <h2>Uniform to Gaussian</h2>
 <p>$$r = \sqrt{-2\ln u_1}, \quad \theta = 2\pi u_2, \quad z = r(\cos\theta, \sin\theta)$$</p>
 <p>Box-Muller: the same trip, backwards. One uniform number picks an angle, the
@@ -329,7 +251,85 @@ rim.</p>
     <span class="n">th</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">u</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">th</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">th</span><span class="p">)],</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">r</span>
 </pre></div>
-</div><video src="2026-09-19-cdf/box_muller.mp4?v=1790263839" autoplay loop muted playsinline></video></div>
+</div><video src="2026-09-23-cdf/box_muller.mp4?v=1790269831" autoplay loop muted playsinline></video></div>
+<hr id="2026-09-19-gradients" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
+<div class=dim>2026-09-19 &middot; <a class=back href="2026-09-19-gradients/index.html">permalink</a></div>
+<div class=dayhead>Gradients</div>
+<p><em>Write-up goes here.</em></p>
+<div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jaxvis</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">fad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jaxvis.fields</span><span class="w"> </span><span class="kn">import</span> <span class="n">grid</span>
+
+<span class="n">fad</span><span class="o">.</span><span class="n">day</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+</pre></div>
+</div>
+<h2>A circle out of noise</h2>
+<p>$$z \leftarrow z + \eta\,(y - \sigma(z)) + \eta\lambda\,\nabla^2 z$$</p>
+<p>Start from pure noise and descend on two terms at once: one pulls every
+pixel toward its label, the other punishes disagreement with its neighbours.
+The speckle coarsens, a disc surfaces, and the edge tightens. The same two
+forces that separate oil from water, aimed at a circle.</p>
+<p><em>Notes.</em></p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">gx</span><span class="p">,</span> <span class="n">gy</span> <span class="o">=</span> <span class="n">grid</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">target</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">gx</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">gy</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">0.55</span><span class="p">)</span>
+                     <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">))</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">))</span> <span class="o">*</span> <span class="mf">2.5</span><span class="p">)</span>
+
+<span class="n">lr</span><span class="p">,</span> <span class="n">smooth</span> <span class="o">=</span> <span class="mf">0.06</span><span class="p">,</span> <span class="mf">3.0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">lap</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">a</span><span class="p">)</span>
+
+
+<span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw_sim</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">noise</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span>
+                 <span class="n">show</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">grain</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">a_circle_from_noise</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">))</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">smooth</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-09-19-gradients/a_circle_from_noise.mp4?v=1790269854" autoplay loop muted playsinline></video></div>
+<h2>Cross-entropy</h2>
+<p>$$z \leftarrow z + \eta\,(y - \sigma(z))$$</p>
+<p>Drop the neighbour term. Every pixel now solves its own problem with no idea
+what is next to it. The disc still arrives -- and stays grainy forever,
+because nothing in the update ever compares two pixels.</p>
+<p><em>Notes.</em></p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw_sim</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">noise</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span>
+                 <span class="n">show</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">grain</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cross_entropy</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+</pre></div>
+</div><video src="2026-09-19-gradients/cross_entropy.mp4?v=1790269855" autoplay loop muted playsinline></video></div>
+<h2>Heat equation</h2>
+<p>$$z \leftarrow z + \eta\lambda\,\nabla^2 z$$</p>
+<p>The other half, started from a clean circle and run twenty times longer.
+With no label to hold it in place the edge bleeds outward and keeps
+bleeding. Left alone this term does not build anything -- it erases.</p>
+<p><em>Notes.</em></p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw_sim</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">target</span> <span class="o">*</span> <span class="mf">6.0</span> <span class="o">-</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
+                 <span class="n">grain</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">heat_equation</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="mf">0.24</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-09-19-gradients/heat_equation.mp4?v=1790269856" autoplay loop muted playsinline></video></div>
+<h2>No target at all</h2>
+<p>$$z \leftarrow z + \eta\,(z - z^3) + \eta\lambda\,\nabla^2 z$$</p>
+<p>Swap the label for a term that pushes each pixel away from zero, toward
+either $+1$ or $-1$, and keep the smoothing. Nothing is being fitted now.
+The speckle still coarsens into domains, and they keep eating each other.</p>
+<p><em>Notes.</em></p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw_sim</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">noise</span> <span class="o">*</span> <span class="mf">0.04</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
+                 <span class="n">grain</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">no_target_at_all</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">z</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">smooth</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-09-19-gradients/no_target_at_all.mp4?v=1790269856" autoplay loop muted playsinline></video></div>
 <hr id="2026-09-17-outliers" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
 <div class=dim>2026-09-17 &middot; <a class=back href="2026-09-17-outliers/index.html">permalink</a></div>
 <div class=dayhead>Outliers</div>
@@ -367,7 +367,7 @@ and collapses into a dot.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">z_score</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">std</span>
 </pre></div>
-</div><video src="2026-09-17-outliers/z_score.mp4?v=1790263841" autoplay loop muted playsinline></video></div>
+</div><video src="2026-09-17-outliers/z_score.mp4?v=1790269652" autoplay loop muted playsinline></video></div>
 <h2>Median and MAD instead</h2>
 <p>$$z = \frac{x - \mathrm{med}(x)}{1.4826\,\mathrm{MAD}}$$</p>
 <p>The median ignores anything past the middle of the sorted list, so 3% of
@@ -382,7 +382,7 @@ their shape.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">robust_scale</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">med</span><span class="p">)</span> <span class="o">/</span> <span class="n">mad</span>
 </pre></div>
-</div><video src="2026-09-17-outliers/robust_scale.mp4?v=1790263840" autoplay loop muted playsinline></video></div>
+</div><video src="2026-09-17-outliers/robust_scale.mp4?v=1790269652" autoplay loop muted playsinline></video></div>
 <h2>Winsorising</h2>
 <p>$$x \mapsto \mathrm{clip}(x,\; -3,\; 3)$$</p>
 <p>Rather than dropping outliers, pin them to the edge. They stop distorting
@@ -393,7 +393,7 @@ pile onto the boundary.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">winsorise</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">med</span><span class="p">)</span> <span class="o">/</span> <span class="n">mad</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-09-17-outliers/winsorise.mp4?v=1790263840" autoplay loop muted playsinline></video></div>
+</div><video src="2026-09-17-outliers/winsorise.mp4?v=1790269652" autoplay loop muted playsinline></video></div>
 <hr id="2026-09-16-distributions" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
 <div class=dim>2026-09-16 &middot; <a class=back href="2026-09-16-distributions/index.html">permalink</a></div>
 <div class=dayhead>Distributions</div>
@@ -438,7 +438,7 @@ end up here.</p>
                               <span class="n">minval</span><span class="o">=-</span><span class="n">amp</span><span class="p">,</span> <span class="n">maxval</span><span class="o">=</span><span class="n">amp</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">total</span> <span class="o">+</span> <span class="n">draw</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span>
 </pre></div>
-</div><video src="2026-09-16-distributions/central_limit.mp4?v=1790263842" autoplay loop muted playsinline></video></div>
+</div><video src="2026-09-16-distributions/central_limit.mp4?v=1790269652" autoplay loop muted playsinline></video></div>
 <h2>Whitening</h2>
 <p>$$z = L^{-1}(x - \mu), \qquad LL^{\top} = \Sigma$$</p>
 <p>Data rarely arrives centred and round. Subtracting the mean slides the cloud
@@ -461,4 +461,4 @@ a plain Gaussian. Colour is the angle each point started at.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">whiten</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">@</span> <span class="n">unmix</span>
 </pre></div>
-</div><video src="2026-09-16-distributions/whiten.mp4?v=1790263842" autoplay loop muted playsinline></video></div>
+</div><video src="2026-09-16-distributions/whiten.mp4?v=1790269652" autoplay loop muted playsinline></video></div>
