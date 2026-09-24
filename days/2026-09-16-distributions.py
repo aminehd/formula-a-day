@@ -1,7 +1,7 @@
 # %% [markdown]
 # # Distributions
 #
-# _Write-up goes here._
+#
 
 # %%
 import jax
@@ -22,13 +22,8 @@ cloud = dict(rep={(n, 2): "points"}, only="points", structural=True,
 #
 # $$S_k = \frac{R + \sum_{i=1}^{k} U_i}{\sqrt{1 + k\,\sigma_U^2}}$$
 #
-# Start from a ring -- nothing like a Gaussian, and obviously not one to look
-# at. Then add plain uniform noise, one draw at a time. The hole fills, the
-# edge softens, and it settles into a Gaussian. Whatever you begin with, sums
-# end up here.
+# Simulate the central limit theorem by starting with any distribution and adding plain uniform noise.
 #
-# _Notes._
-
 # %%
 steps, amp = 200, 0.275
 su = amp / np.sqrt(3.0)
@@ -51,17 +46,11 @@ def central_limit(state):
 
 
 # %% [markdown]
-# ## Whitening
+# ## Preprocessing normal data
 #
 # $$z = L^{-1}(x - \mu), \qquad LL^{\top} = \Sigma$$
-#
-# Data rarely arrives centred and round. Subtracting the mean slides the cloud
-# to the origin; undoing the covariance unstretches it. A tilted oval becomes
-# a plain Gaussian. Colour is the angle each point started at.
-#
-# _Notes._
-
 # %%
+
 tilted = rng.multivariate_normal([0.9, -0.5], [[2.2, 1.6], [1.6, 1.4]], n)
 mu = tilted.mean(0)
 chol = np.linalg.cholesky(np.cov(tilted.T))

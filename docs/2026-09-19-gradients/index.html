@@ -177,7 +177,6 @@ addEventListener('click', e => {
 
 <a class=back href="../index.html">&larr; all formulas</a>
 <h1>Gradients</h1>
-<p><em>Write-up goes here.</em></p>
 <div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -190,11 +189,7 @@ addEventListener('click', e => {
 </div>
 <h2>A circle out of noise</h2>
 <p>$$z \leftarrow z + \eta\,(y - \sigma(z)) + \eta\lambda\,\nabla^2 z$$</p>
-<p>Start from pure noise and descend on two terms at once: one pulls every
-pixel toward its label, the other punishes disagreement with its neighbours.
-The speckle coarsens, a disc surfaces, and the edge tightens. The same two
-forces that separate oil from water, aimed at a circle.</p>
-<p><em>Notes.</em></p>
+<p>Start from pure noise and descend on two terms at once. One pulls pixels to the edges, one punishes disagreement with neighbours.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">gx</span><span class="p">,</span> <span class="n">gy</span> <span class="o">=</span> <span class="n">grid</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
 <span class="n">target</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">hypot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">gx</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">gy</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">0.55</span><span class="p">)</span>
                      <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">))</span>
@@ -213,42 +208,24 @@ forces that separate oil from water, aimed at a circle.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">a_circle_from_noise</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">))</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">smooth</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </pre></div>
-</div><video src="a_circle_from_noise.mp4?v=1790269854" autoplay loop muted playsinline></video></div>
+</div><video src="a_circle_from_noise.mp4?v=1790272522" autoplay loop muted playsinline></video></div>
 <h2>Cross-entropy</h2>
 <p>$$z \leftarrow z + \eta\,(y - \sigma(z))$$</p>
-<p>Drop the neighbour term. Every pixel now solves its own problem with no idea
-what is next to it. The disc still arrives -- and stays grainy forever,
-because nothing in the update ever compares two pixels.</p>
-<p><em>Notes.</em></p>
+<p>Drop the neighbour term.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw_sim</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">noise</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span>
                  <span class="n">show</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">grain</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">cross_entropy</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
 </pre></div>
-</div><video src="cross_entropy.mp4?v=1790269855" autoplay loop muted playsinline></video></div>
-<h2>Heat equation</h2>
-<p>$$z \leftarrow z + \eta\lambda\,\nabla^2 z$$</p>
-<p>The other half, started from a clean circle and run twenty times longer.
-With no label to hold it in place the edge bleeds outward and keeps
-bleeding. Left alone this term does not build anything -- it erases.</p>
-<p><em>Notes.</em></p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw_sim</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">target</span> <span class="o">*</span> <span class="mf">6.0</span> <span class="o">-</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                 <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
-                 <span class="n">grain</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">heat_equation</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="mf">0.24</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-</pre></div>
-</div><video src="heat_equation.mp4?v=1790269856" autoplay loop muted playsinline></video></div>
+</div><video src="cross_entropy.mp4?v=1790272523" autoplay loop muted playsinline></video></div>
 <h2>No target at all</h2>
 <p>$$z \leftarrow z + \eta\,(z - z^3) + \eta\lambda\,\nabla^2 z$$</p>
 <p>Swap the label for a term that pushes each pixel away from zero, toward
-either $+1$ or $-1$, and keep the smoothing. Nothing is being fitted now.
-The speckle still coarsens into domains, and they keep eating each other.</p>
-<p><em>Notes.</em></p>
+either $+1$ or $-1$, and keep the smoothing. Nothing is being fitted now.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw_sim</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">noise</span> <span class="o">*</span> <span class="mf">0.04</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span> <span class="n">every</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">tween</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                  <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">680</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span>
                  <span class="n">grain</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">no_target_at_all</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">z</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">smooth</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </pre></div>
-</div><video src="no_target_at_all.mp4?v=1790269856" autoplay loop muted playsinline></video></div>
+</div><video src="no_target_at_all.mp4?v=1790272524" autoplay loop muted playsinline></video></div>

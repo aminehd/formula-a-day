@@ -1,4 +1,4 @@
-## Just because they're beautiful
+## Some pretty examples of generated gifs
 
 - **shear** —
 - **fold** —
@@ -10,6 +10,3 @@
 - **projecting** —
 - **flattening** —
 - **collapsing** —
-
-I want to explore the useful ones in ML with this framework. I feel like one
-day there'll be a formula in my studies that actually looks nice.

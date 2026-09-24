@@ -177,7 +177,6 @@ addEventListener('click', e => {
 
 <a class=back href="../index.html">&larr; all formulas</a>
 <h1>Outliers</h1>
-<p><em>Write-up goes here.</em></p>
 <div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jaxvis</span>
@@ -199,10 +198,7 @@ addEventListener('click', e => {
 </div>
 <h2>What the outliers do to the scale</h2>
 <p>$$z = \frac{x - \bar{x}}{s}$$</p>
-<p>Standardising with the mean and standard deviation. The 3% of far-flung
-points inflate $s$, so the clean 97% gets divided by a number meant for them
-and collapses into a dot.</p>
-<p><em>Notes.</em></p>
+<p>Standardising with the mean and standard deviation.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
@@ -211,13 +207,9 @@ and collapses into a dot.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">z_score</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="n">std</span>
 </pre></div>
-</div><video src="z_score.mp4?v=1790269652" autoplay loop muted playsinline></video></div>
+</div><video src="z_score.mp4?v=1790272583" autoplay loop muted playsinline></video></div>
 <h2>Median and MAD instead</h2>
 <p>$$z = \frac{x - \mathrm{med}(x)}{1.4826\,\mathrm{MAD}}$$</p>
-<p>The median ignores anything past the middle of the sorted list, so 3% of
-outliers cannot move it. Same data, same goal, and now the clean points keep
-their shape.</p>
-<p><em>Notes.</em></p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">med</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
 <span class="n">mad</span> <span class="o">=</span> <span class="mf">1.4826</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="n">med</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
 
@@ -226,15 +218,12 @@ their shape.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">robust_scale</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">med</span><span class="p">)</span> <span class="o">/</span> <span class="n">mad</span>
 </pre></div>
-</div><video src="robust_scale.mp4?v=1790269652" autoplay loop muted playsinline></video></div>
+</div><video src="robust_scale.mp4?v=1790272582" autoplay loop muted playsinline></video></div>
 <h2>Winsorising</h2>
 <p>$$x \mapsto \mathrm{clip}(x,\; -3,\; 3)$$</p>
-<p>Rather than dropping outliers, pin them to the edge. They stop distorting
-anything downstream but still count as observations -- you can watch them
-pile onto the boundary.</p>
-<p><em>Notes.</em></p>
+<p>Rather than dropping outliers, pin them to the edge.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"bloom"</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">flag</span><span class="p">,</span> <span class="o">**</span><span class="n">cloud</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">winsorise</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">clip</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">med</span><span class="p">)</span> <span class="o">/</span> <span class="n">mad</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
 </pre></div>
-</div><video src="winsorise.mp4?v=1790269652" autoplay loop muted playsinline></video></div>
+</div><video src="winsorise.mp4?v=1790272582" autoplay loop muted playsinline></video></div>

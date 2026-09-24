@@ -1,7 +1,6 @@
 # %% [markdown]
 # # Outliers
 #
-# _Write-up goes here._
 
 # %%
 import jax.numpy as jnp
@@ -27,12 +26,8 @@ flag = np.where(bad[:, None], [1.0, 0.35, 0.5], [0.3, 0.8, 1.0])
 #
 # $$z = \frac{x - \bar{x}}{s}$$
 #
-# Standardising with the mean and standard deviation. The 3% of far-flung
-# points inflate $s$, so the clean 97% gets divided by a number meant for them
-# and collapses into a dot.
+# Standardising with the mean and standard deviation.
 #
-# _Notes._
-
 # %%
 mean = np.asarray(data).mean(0)
 std = np.asarray(data).std(0)
@@ -48,11 +43,7 @@ def z_score(x):
 #
 # $$z = \frac{x - \mathrm{med}(x)}{1.4826\,\mathrm{MAD}}$$
 #
-# The median ignores anything past the middle of the sorted list, so 3% of
-# outliers cannot move it. Same data, same goal, and now the clean points keep
-# their shape.
 #
-# _Notes._
 
 # %%
 med = np.median(np.asarray(data), 0)
@@ -69,12 +60,8 @@ def robust_scale(x):
 #
 # $$x \mapsto \mathrm{clip}(x,\; -3,\; 3)$$
 #
-# Rather than dropping outliers, pin them to the edge. They stop distorting
-# anything downstream but still count as observations -- you can watch them
-# pile onto the boundary.
+# Rather than dropping outliers, pin them to the edge.
 #
-# _Notes._
-
 # %%
 @jaxvis.draw(data, palette="bloom", colors=flag, **cloud)
 def winsorise(x):

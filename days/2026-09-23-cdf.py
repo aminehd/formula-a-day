@@ -1,7 +1,7 @@
 # %% [markdown]
 # # Between uniform and Gaussian
 #
-# _Write-up goes here._
+#
 
 # %%
 import jax
@@ -30,11 +30,9 @@ def by_value(v):
 #
 # $$u = \Phi(x) = \tfrac{1}{2}\left(1 + \operatorname{erf}(x/\sqrt{2})\right)$$
 #
-# Push any distribution through its own CDF and it comes out perfectly
-# uniform -- the probability integral transform. A round blob becomes an even
-# square: the density flattens, not just the outline.
+# Push any distribution through its own CDF to a uniform distribution.
 #
-# _Notes._
+#
 
 # %%
 gauss = rng.normal(size=(n, 2))
@@ -52,12 +50,7 @@ def to_uniform(x):
 #
 # $$r = \sqrt{-2\ln u_1}, \quad \theta = 2\pi u_2, \quad z = r(\cos\theta, \sin\theta)$$
 #
-# Box-Muller: the same trip, backwards. One uniform number picks an angle, the
-# other a radius, and the result is exactly Gaussian. Colour is $u_1$, the
-# number that becomes the radius -- watch the square's left edge become the far
-# rim.
 #
-# _Notes._
 
 # %%
 unif = rng.uniform(1e-4, 1.0, size=(n, 2))
