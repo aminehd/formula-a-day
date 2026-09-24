@@ -1,0 +1,4 @@
+[submodule "site"]
+	path = site
+	url = https://github.com/aminehd/fad-site.git
+	branch = main
