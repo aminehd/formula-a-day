@@ -3,3 +3,4 @@
 *.gif
 .jaxvis-cache.json
 __pycache__/
+!threads/clips/*.gif
