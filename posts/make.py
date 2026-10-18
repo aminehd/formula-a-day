@@ -24,6 +24,55 @@ BG = (11, 11, 16)
 FG = (233, 230, 240)
 DIM = (128, 132, 150)
 MONO = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
+MONO_B = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
+
+# Token colour by Pygments type. Read as a prefix match, longest first, so
+# Name.Function finds its own entry and Name falls through to the default.
+SYNTAX = {
+    "Keyword": (255, 121, 198),
+    "Keyword.Namespace": (255, 121, 198),
+    "Name.Decorator": (255, 184, 108),
+    "Name.Function": (130, 220, 255),
+    "Name.Builtin": (130, 220, 255),
+    "Literal.String": (255, 205, 135),
+    "Literal.Number": (189, 160, 255),
+    "Operator": (150, 155, 178),
+    "Punctuation": (150, 155, 178),
+    "Comment": DIM,
+}
+
+
+def spans_of(code):
+    """Python source -> one list of (text, colour) per line.
+
+    Pygments hands back a flat token stream with newlines buried inside the
+    token text, so the lexing and the line breaking are two separate jobs.
+    """
+    from pygments import lex
+    from pygments.lexers import PythonLexer
+
+    def colour(tok):
+        name = str(tok).removeprefix("Token.")
+        while name:
+            if name in SYNTAX:
+                return SYNTAX[name]
+            name = name.rpartition(".")[0]
+        return FG
+
+    rows, row = [], []
+    for tok, text in lex(code, PythonLexer()):
+        col = colour(tok)
+        parts = text.split("\n")
+        for i, part in enumerate(parts):
+            if i:
+                rows.append(row)
+                row = []
+            if part:
+                row.append((part, col))
+    rows.append(row)
+    while rows and not rows[-1]:
+        rows.pop()
+    return rows
 
 
 def frames_of(mp4, every=2, height=None):
@@ -67,52 +116,57 @@ def panel(w, h, tex, code, title, foot):
 
     The code font is FITTED, not chosen: a decorator line is long, and a
     fixed size either overflows the panel or collides with the footer
-    depending on the snippet. Shrink until both fit.
+    depending on the snippet. Shrink until both fit -- but start large and
+    stop early, because legibility on a phone is the whole point.
     """
     im = Image.new("RGB", (w, h), BG)
     d = ImageDraw.Draw(im)
-    pad = round(w * 0.065)
+    pad = round(w * 0.050)
     y = pad
 
-    f_title = ImageFont.truetype(MONO, round(w * 0.038))
+    f_title = ImageFont.truetype(MONO_B, round(w * 0.038))
     d.text((pad, y), title, font=f_title, fill=FG)
-    y += round(w * 0.038 * 2.2)
+    y += round(w * 0.038 * 1.85)
 
-    fi = formula_img(tex, px=round(w * 0.032))
+    fi = formula_img(tex, px=round(w * 0.033))
     if fi.width > w - 2 * pad:                 # never let it run off the edge
         s_ = (w - 2 * pad) / fi.width
         fi = fi.resize((round(fi.width * s_), round(fi.height * s_)),
                        Image.LANCZOS)
     im.paste(fi, (pad, y), fi)
-    y += fi.height + round(w * 0.05)
+    y += fi.height + round(w * 0.034)
 
     d.line([(pad, y), (w - pad, y)], fill=(38, 38, 48), width=1)
-    y += round(w * 0.042)
+    y += round(w * 0.030)
 
-    lines = code.strip("\n").split("\n")
+    rows = spans_of(code.strip("\n"))
+    widest = max(len("".join(t for t, _ in r)) for r in rows)
     foot_px = round(w * 0.0245)
-    room_w, room_h = w - 2 * pad, h - pad * 2 - foot_px - y
-    size = round(w * 0.030)
-    while size > 9:
-        f = ImageFont.truetype(MONO, size)
-        wide = max(d.textlength(l, font=f) for l in lines)
-        if wide <= room_w and len(lines) * size * 1.62 <= room_h:
+    room_w, room_h = w - 2 * pad, h - round(pad * 1.6) - foot_px - y
+    size = round(w * 0.042)
+    while size > 11:
+        f = ImageFont.truetype(MONO_B, size)
+        if (d.textlength("M" * widest, font=f) <= room_w
+                and len(rows) * size * 1.5 <= room_h):
             break
         size -= 1
-    f_code = ImageFont.truetype(MONO, size)
-    lh = round(size * 1.62)
-    for line in lines:
-        col = DIM if line.lstrip().startswith("#") else FG
-        d.text((pad, y), line, font=f_code, fill=col)
+    f_code = ImageFont.truetype(MONO_B, size)
+    adv = d.textlength("M", font=f_code)      # monospace: one width for all
+    lh = round(size * 1.5)
+    for row in rows:
+        x = pad
+        for text, col in row:
+            d.text((x, y), text, font=f_code, fill=col)
+            x += adv * len(text)
         y += lh
 
     f_foot = ImageFont.truetype(MONO, foot_px)
-    d.text((pad, h - pad - foot_px), foot, font=f_foot, fill=DIM)
+    d.text((pad, h - round(pad * 0.9) - foot_px), foot, font=f_foot, fill=DIM)
     return im
 
 
 def postcard(mp4, tex, code, title, name, foot="jaxvis", every=2,
-             clip_px=600, panel_ratio=1.32, colors=128):
+             clip_px=600, panel_ratio=1.52, colors=128):
     # Discord rejects anything over 10 MB, so the palette and the pixel
     # height are the two knobs that matter. A dense 60k-point cloud dithers
     # badly and needs a smaller frame than a line drawing does.
@@ -145,12 +199,9 @@ POSTS = [
 
 x = jaxvis.rail(-6.0, 6.0, 500)
 
-@jaxvis.analyze(x, **jaxvis.curve(x, ylim=(-0.35, 1.35)))
+@jaxvis.analyze(x, **jaxvis.curve(x))
 def sigmoid(p):
-    return 1.0 / (1.0 + jnp.exp(-p))
-
-# every frame is a real intermediate value,
-# pulled straight out of the jaxpr""",
+    return 1.0 / (1.0 + jnp.exp(-p))""",
         foot="github.com/aminehd/jaxvis",
     ),
     dict(
@@ -160,16 +211,12 @@ def sigmoid(p):
         tex=r"$y=\tanh(kx)$",
         clip_px=460, colors=96,
         code="""import jaxvis, jax.numpy as jnp
-from jaxvis import tint
 
-g = sheet()            # 60,000 random points
+g = sheet()        # 60,000 points
 
-@jaxvis.analyze(g, colors=tint.by_radius(g),
-                **jaxvis.cloud(g, palette="bloom"))
+@jaxvis.analyze(g, **jaxvis.cloud(g))
 def the_squash(p):
-    return jnp.tanh(1.6 * p)
-
-# the saturation every activation is buying""",
+    return jnp.tanh(1.6 * p)""",
         foot="github.com/aminehd/jaxvis",
     ),
     dict(
@@ -180,12 +227,9 @@ def the_squash(p):
         code="""import jaxvis, jax.numpy as jnp
 
 i = jnp.arange(8)
+M = (i[:, None] + i[None, :] == 7) * 1.0
 
-jaxvis.grains((i[:, None] + i[None, :] == 7) * 1.0, x)
-
-# each input is a 9x9 block of coloured grains,
-# split among the outputs by how much each used.
-# a permutation gives you eight pure colours.""",
+jaxvis.grains(M, x)""",
         foot="github.com/aminehd/jaxvis",
     ),
 ]
