@@ -179,28 +179,26 @@ addEventListener('click', e => {
 <p>I made a <a href="https://github.com/aminehd/jaxvis">framework for JAX visualisation</a> where you can annotate your JAX-compatible function with it, and after it runs it generates a graph with the output of each intermediate operation that JAX generated. There is also another visualizer, which visualizes the transformation that happens to the function's input when the function is applied. You can think about grad as one such transformation.</p>
 <p>I think seeing these formulas can be very helpful in learning them, and the generated images can be another learning channel for multimodal models or for agents to "see" what equations look like.</p>
 <p>On this website, I am gonna experiment with different functions each day and publish if they turned out alright. Btw, to generate the images, I just need to annotate them with <code>jaxvis.draw</code>.</p>
-<p class=dim><a href="#2026-10-18-puzzles">puzzles</a> &middot; <a href="#2026-10-17-one-dimension">one dimension</a></p>
-<hr id="2026-10-18-puzzles" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
-<div class=dim>2026-10-18 &middot; <a class=back href="2026-10-18-puzzles/index.html">permalink</a></div>
-<div class=dayhead>The puzzles, as wiring</div>
-<p>Every Tensor Puzzle I have solved so far came down to the same move:
-stop thinking about a loop, and build a matrix instead. The recipe is
-two sentences.</p>
-<blockquote>
-<p><strong>Row $i$</strong> says what builds output $i$.
-<strong>Column $j$</strong> says where input $j$ goes.</p>
-</blockquote>
-<p>Write the rule in $i$ and $j$, put the row-thing in <code>[:, None]</code> and
-the column-thing in <code>[None, :]</code>, let broadcasting make the grid, and
-the matrix is done. Then one <code>@</code>.</p>
-<p>What the recipe does not show me is the <em>movement</em>. So here it is:
-inputs along the bottom, outputs along the top, one narrow link for
-every non-zero entry of the matrix, and a pulse travelling from the
-entry that sent it to the entry that receives it. Each link starts at
-its own moment, so I can watch individual contributions land instead
-of one curtain coming down.</p>
-<p>The colour of a square is its value. The colour of a wire is the
-contribution it is carrying, $M_{ij}x_j$, on the same scale.</p>
+<p>If you want to see more randomly generated things &mdash; shapes, flows and clouds made for no reason at all &mdash; <a href="fun.html">they are all on this page</a>.</p>
+<p class=dim><a href="#2026-10-18-linear">linear</a> &middot; <a href="#2026-10-17-one-dimension">one dimension</a></p>
+<hr id="2026-10-18-linear" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
+<div class=dim>2026-10-18 &middot; <a class=back href="2026-10-18-linear/index.html">permalink</a></div>
+<div class=dayhead>What a matrix does to a vector</div>
+<p>$y = Mx$ is $n^2$ little multiplications, and then they are added up
+and thrown away. The input does not show them. The output does not
+show them. So the one question you actually want answered about a
+linear map — <em>which input entry was responsible for which part of the
+output?</em> — is invisible in both vectors.</p>
+<p>It lives in the $n^2$ numbers $M_{ij}x_j$. One per wire.</p>
+<p><strong>How to read these.</strong> Inputs are the squares along the bottom,
+outputs the squares along the top, and there is one narrow link for
+every non-zero entry of $M$. A pulse travels each link from the entry
+that sent the contribution to the entry that receives it. Every link
+starts at its own random moment, so you see individual contributions
+landing rather than one curtain coming down — and the output squares
+only take their colour as their pulses arrive.</p>
+<p>Colour is value, on one scale shared by the squares and the wires,
+symmetric about zero. The middle of the palette means <em>nothing here</em>.</p>
 <div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jaxvis</span>
@@ -210,102 +208,76 @@ contribution it is carrying, $M_{ij}x_j$, on the same scale.</p>
 
 <span class="n">n</span> <span class="o">=</span> <span class="mi">8</span>
 <span class="n">i</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">2.8</span><span class="p">])</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">2.8</span><span class="p">])</span>
 </pre></div>
 </div>
-<h2>p07 — cumsum</h2>
-<p>$$y_i = \sum_{j \le i} a_j
-  \qquad\Longleftrightarrow\qquad
-  M_{ij} = [\,i \ge j\,]$$</p>
-<pre><code class="language-python">def cumsum(a):
-    return (arange(a.shape[0])[:, None] &gt;= arange(a.shape[0])[None, :]) @ a
-</code></pre>
-<p>Output $0$ gets one wire. Output $7$ gets eight. The fan widening left
-to right <em>is</em> the running total.</p>
-<p>This is the one that was silently wrong for three weeks, because I had
-written <code>&lt;=</code> instead of <code>&gt;=</code>. Flipped, the wiring leans the other way
-and the answer is a suffix sum — right shape, plausible numbers, no
-error. Worth remembering what a wrong matrix looks like.</p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:],</span> <span class="n">a</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"cumsum"</span><span class="p">)</span>
+<h2>A running total</h2>
+<p>$$M_{ij} = [\,i \ge j\,]$$</p>
+<p>Output $0$ gets one wire, output $7$ gets eight. The fan widening
+from left to right <em>is</em> the prefix sum — and it is also the reason
+nobody computes one this way: the picture has $O(n^2)$ wires in it.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:],</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"running_total"</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-10-18-puzzles/cumsum.mp4?v=1792346727" autoplay loop muted playsinline></video></div>
-<h2>p08 — diff</h2>
-<p>$$y_i = a_i - a_{i-1}
-  \qquad\Longleftrightarrow\qquad
-  M_{ij} = [\,i = j\,] - [\,i - j = 1\,]$$</p>
-<pre><code class="language-python">def diff(a, i):
-    return (where(arange(len(a))[:, None] == arange(len(a))[None, :], 1, 0)
-            + where(arange(len(a))[:, None] - arange(len(a))[None, :] == 1, -1, 0)) @ a
-</code></pre>
-<p>Two wires per output and they carry opposite signs — the colours split
-to either side of the palette's middle. Every wire is short, which is
-what local means.</p>
+</div><video src="2026-10-18-linear/running_total.mp4?v=1792347524" autoplay loop muted playsinline></video></div>
+<h2>Local averaging</h2>
+<p>$$M_{ij} = \tfrac{1}{3}\,[\,|i - j| \le 1\,]$$</p>
+<p>Three wires per output and all of them short. Nothing travels far,
+which is the whole character of a local operator — and the reason a
+convolution is cheap where the running total was not.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">((</span><span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
+              <span class="n">name</span><span class="o">=</span><span class="s2">"local_average"</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-10-18-linear/local_average.mp4?v=1792347524" autoplay loop muted playsinline></video></div>
+<h2>A permutation</h2>
+<p>$$M_{ij} = [\,i + j = n - 1\,]$$</p>
+<p>Reversal. Eight wires, every one crossing the middle exactly once,
+nothing mixing and nothing lost. One wire in and one wire out of each
+square is what it means for a matrix to only <em>move</em> numbers.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">((</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
+              <span class="n">name</span><span class="o">=</span><span class="s2">"permutation"</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-10-18-linear/permutation.mp4?v=1792347524" autoplay loop muted playsinline></video></div>
+<h2>A cyclic shift</h2>
+<p>$$M_{ij} = [\,j = (i + 1) \bmod n\,]$$</p>
+<p>A permutation again, but a lazy one: seven wires lean one step over
+and the eighth wraps all the way back across the frame. That one long
+wire is the entire content of the word <em>cyclic</em>.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">((</span><span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"shift"</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-10-18-linear/shift.mp4?v=1792347525" autoplay loop muted playsinline></video></div>
+<h2>A difference</h2>
+<p>$$M_{ij} = [\,i = j\,] - [\,i - j = 1\,]$$</p>
+<p>Two wires per output carrying opposite signs, so the colours split to
+either side of the palette's middle. Every square both sends and
+cancels — which is what makes this the discrete derivative.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">D</span> <span class="o">=</span> <span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
      <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
-<span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"diff"</span><span class="p">)</span>
+<span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"difference"</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-10-18-puzzles/diff.mp4?v=1792346728" autoplay loop muted playsinline></video></div>
-<h2>p11 — flip</h2>
-<p>$$y_i = a_{n-1-i}
-  \qquad\Longleftrightarrow\qquad
-  M_{ij} = [\,i + j = n - 1\,]$$</p>
-<pre><code class="language-python">def flip(a, i):
-    return a[i - 1 - arange(i)]
-</code></pre>
-<p>I solved this one by indexing, not with a matrix. The wiring shows
-they are the same move seen from two sides: eight wires, every one
-crossing the middle exactly once, nothing mixing. A permutation.</p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">((</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"flip"</span><span class="p">)</span>
-</pre></div>
-</div><video src="2026-10-18-puzzles/flip.mp4?v=1792346728" autoplay loop muted playsinline></video></div>
-<h2>p10 — roll</h2>
-<p>$$y_i = a_{(i+1) \bmod n}
-  \qquad\Longleftrightarrow\qquad
-  M_{ij} = [\,j = (i+1) \bmod n\,]$$</p>
-<pre><code class="language-python">def roll(a, i):
-    return a[where(arange(i) + 1 &lt; i, arange(i) + 1, 0)]
-</code></pre>
-<p>A permutation again, but a lazy one: seven wires lean one step to the
-left and the eighth wraps all the way back. That long wire is the
-whole content of the word <em>cyclic</em>.</p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">((</span><span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"roll"</span><span class="p">)</span>
-</pre></div>
-</div><video src="2026-10-18-puzzles/roll.mp4?v=1792346728" autoplay loop muted playsinline></video></div>
-<h2>p12 — compress</h2>
-<p>$$y = (g \odot v)\,M, \qquad M_{j k} = [\,\operatorname{cumsum}(g)_j - 1 = k\,]$$</p>
-<pre><code class="language-python">def compress(g, v, i):
-    return (g * v) @ (cumsum(g * 1)[:, None] - 1 == arange(g.shape[0])[None, :])
-</code></pre>
-<p>The interesting one. The matrix is not fixed — it is <strong>built from the
-data</strong>, because where each kept value lands depends on how many were
-kept before it. The prefix sum of the mask is the destination slot.</p>
-<p>Only the kept entries get a wire at all. The dropped ones are the
-masked squares on the bottom with nothing leaving them, and the empty
-slots on the top are the tail that nothing reaches.</p>
-<p>This is the shape of the whole trick: a rearrangement that depends on
-the data, with a shape that does not. It is how a GPU filters.</p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
-<span class="n">cs</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">@</span> <span class="n">g</span>                <span class="c1"># p07, reused</span>
-<span class="n">C</span> <span class="o">=</span> <span class="p">(</span><span class="n">cs</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">*</span> <span class="mf">1.0</span>
+</div><video src="2026-10-18-linear/difference.mp4?v=1792347523" autoplay loop muted playsinline></video></div>
+<h2>A learned weight matrix</h2>
+<p>$$M_{ij} \sim \mathcal{N}(0, 1)$$</p>
+<p>No structure at all. Every input reaches every output, the signs go
+both ways, and contributions that cancel arrive at the same square
+from opposite ends of the palette. This is what one layer of a
+trained network looks like, and why reading its weights one entry at
+a time tells you nothing.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">W</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.4</span><span class="p">)</span>
 
-<span class="c1"># y = (g*v) @ C  is the same as  C.T @ (g*v)</span>
-<span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">(</span><span class="n">C</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">g</span> <span class="o">*</span> <span class="n">a</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"compress"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"y = (g*v) M   scatter"</span><span class="p">)</span>
+<span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"dense"</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">0.62</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-10-18-puzzles/compress.mp4?v=1792346727" autoplay loop muted playsinline></video></div>
-<h2>p13 — pad_to</h2>
-<p>$$\texttt{pad_to}(a, i, j): \quad i \text{ numbers in}, \; j \text{ slots out}$$</p>
-<p>The next one, and the first where <strong>the output is not the same length
-as the input</strong>. So the matrix stops being square, and the recipe has
-to say something about the rows that have no input to draw from and
-the inputs that have no row to land in.</p>
-<p>Here is the question and nothing else: five slots in, eight out, no
-wiring yet. Working out which entries are ones is the puzzle, and I
-would rather find it than be shown it.</p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">)),</span> <span class="n">a</span><span class="p">[:</span><span class="mi">5</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s2">"pad_to"</span><span class="p">,</span>
-              <span class="n">label</span><span class="o">=</span><span class="s2">"p13 pad_to   (8, 5) @ (5,)   -- unsolved"</span><span class="p">)</span>
-</pre></div>
-</div><video src="2026-10-18-puzzles/pad_to.mp4?v=1792346728" autoplay loop muted playsinline></video></div>
+</div><video src="2026-10-18-linear/dense.mp4?v=1792347523" autoplay loop muted playsinline></video></div>
+<h2>Try it</h2>
+<p>Every clip on this page is one line. The matrix can be anything, and
+it does not have to be square:</p>
+<pre><code class="language-python">import jaxvis
+jaxvis.impact(M, x, name=&quot;mine&quot;)
+</code></pre>
+<p>The knobs: <code>spread</code> for how staggered the starts are, <code>travel</code> for
+how fast a pulse crosses, <code>lattice</code> for how visible the unlit wiring
+is, <code>palette</code>, and <code>seed</code> for a different random order.</p>
+<p><a href="https://github.com/aminehd/jaxvis">github.com/aminehd/jaxvis</a></p>
 <hr id="2026-10-17-one-dimension" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
 <div class=dim>2026-10-17 &middot; <a class=back href="2026-10-17-one-dimension/index.html">permalink</a></div>
 <div class=dayhead>One dimension</div>
