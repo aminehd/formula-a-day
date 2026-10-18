@@ -175,7 +175,7 @@ addEventListener('click', e => {
 });
 </script>
 
-<a class=back href="../index.html">&larr; all of it</a>
+<a class=back href="../lab.html">&larr; lab</a>
 <h1>What a matrix does to a vector</h1>
 <p>$y = Mx$ is $n^2$ little multiplications, and then they are added up
 and thrown away. The input does not show them. The output does not
@@ -192,6 +192,7 @@ landing rather than one curtain coming down — and the output squares
 only take their colour as their pulses arrive.</p>
 <p>Colour is value, on one scale shared by the squares and the wires,
 symmetric about zero. The middle of the palette means <em>nothing here</em>.</p>
+<!-- page: lab -->
 <div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jaxvis</span>
@@ -211,7 +212,7 @@ from left to right <em>is</em> the prefix sum — and it is also the reason
 nobody computes one this way: the picture has $O(n^2)$ wires in it.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:],</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"running_total"</span><span class="p">)</span>
 </pre></div>
-</div><video src="running_total.mp4?v=1792347524" autoplay loop muted playsinline></video></div>
+</div><video src="running_total.mp4?v=1792348115" autoplay loop muted playsinline></video></div>
 <h2>Local averaging</h2>
 <p>$$M_{ij} = \tfrac{1}{3}\,[\,|i - j| \le 1\,]$$</p>
 <p>Three wires per output and all of them short. Nothing travels far,
@@ -220,7 +221,7 @@ convolution is cheap where the running total was not.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">((</span><span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
               <span class="n">name</span><span class="o">=</span><span class="s2">"local_average"</span><span class="p">)</span>
 </pre></div>
-</div><video src="local_average.mp4?v=1792347524" autoplay loop muted playsinline></video></div>
+</div><video src="local_average.mp4?v=1792348115" autoplay loop muted playsinline></video></div>
 <h2>A permutation</h2>
 <p>$$M_{ij} = [\,i + j = n - 1\,]$$</p>
 <p>Reversal. Eight wires, every one crossing the middle exactly once,
@@ -229,7 +230,7 @@ square is what it means for a matrix to only <em>move</em> numbers.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">((</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
               <span class="n">name</span><span class="o">=</span><span class="s2">"permutation"</span><span class="p">)</span>
 </pre></div>
-</div><video src="permutation.mp4?v=1792347524" autoplay loop muted playsinline></video></div>
+</div><video src="permutation.mp4?v=1792348115" autoplay loop muted playsinline></video></div>
 <h2>A cyclic shift</h2>
 <p>$$M_{ij} = [\,j = (i + 1) \bmod n\,]$$</p>
 <p>A permutation again, but a lazy one: seven wires lean one step over
@@ -237,7 +238,7 @@ and the eighth wraps all the way back across the frame. That one long
 wire is the entire content of the word <em>cyclic</em>.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">((</span><span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"shift"</span><span class="p">)</span>
 </pre></div>
-</div><video src="shift.mp4?v=1792347525" autoplay loop muted playsinline></video></div>
+</div><video src="shift.mp4?v=1792348116" autoplay loop muted playsinline></video></div>
 <h2>A difference</h2>
 <p>$$M_{ij} = [\,i = j\,] - [\,i - j = 1\,]$$</p>
 <p>Two wires per output carrying opposite signs, so the colours split to
@@ -248,7 +249,7 @@ cancels — which is what makes this the discrete derivative.</p>
 
 <span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"difference"</span><span class="p">)</span>
 </pre></div>
-</div><video src="difference.mp4?v=1792347523" autoplay loop muted playsinline></video></div>
+</div><video src="difference.mp4?v=1792348114" autoplay loop muted playsinline></video></div>
 <h2>A learned weight matrix</h2>
 <p>$$M_{ij} \sim \mathcal{N}(0, 1)$$</p>
 <p>No structure at all. Every input reaches every output, the signs go
@@ -260,7 +261,7 @@ a time tells you nothing.</p>
 
 <span class="n">jaxvis</span><span class="o">.</span><span class="n">impact</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"dense"</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">0.62</span><span class="p">)</span>
 </pre></div>
-</div><video src="dense.mp4?v=1792347523" autoplay loop muted playsinline></video></div>
+</div><video src="dense.mp4?v=1792348114" autoplay loop muted playsinline></video></div>
 <h2>Try it</h2>
 <p>Every clip on this page is one line. The matrix can be anything, and
 it does not have to be square:</p>

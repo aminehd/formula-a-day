@@ -20,6 +20,8 @@
 # Colour is value, on one scale shared by the squares and the wires,
 # symmetric about zero. The middle of the palette means *nothing here*.
 #
+# <!-- page: lab -->
+#
 
 # %%
 import jax.numpy as jnp
