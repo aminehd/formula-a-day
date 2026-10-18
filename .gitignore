@@ -4,3 +4,4 @@
 .jaxvis-cache.json
 __pycache__/
 !threads/clips/*.gif
+!docs/posts/*.gif
