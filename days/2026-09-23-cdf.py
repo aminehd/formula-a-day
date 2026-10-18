@@ -2,6 +2,7 @@
 # # Between uniform and Gaussian
 #
 #
+# <!-- page: fun -->
 
 # %%
 import jax

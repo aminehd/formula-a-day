@@ -175,8 +175,9 @@ addEventListener('click', e => {
 });
 </script>
 
-<a class=back href="../index.html">&larr; all formulas</a>
+<a class=back href="../fun.html">&larr; for fun</a>
 <h1>Gradients</h1>
+<!-- page: fun -->
 <div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -208,7 +209,7 @@ addEventListener('click', e => {
 <span class="k">def</span><span class="w"> </span><span class="nf">a_circle_from_noise</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">))</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">smooth</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </pre></div>
-</div><video src="a_circle_from_noise.mp4?v=1790272522" autoplay loop muted playsinline></video></div>
+</div><video src="a_circle_from_noise.mp4?v=1792346910" autoplay loop muted playsinline></video></div>
 <h2>Cross-entropy</h2>
 <p>$$z \leftarrow z + \eta\,(y - \sigma(z))$$</p>
 <p>Drop the neighbour term.</p>
@@ -217,7 +218,7 @@ addEventListener('click', e => {
 <span class="k">def</span><span class="w"> </span><span class="nf">cross_entropy</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">target</span> <span class="o">-</span> <span class="n">jax</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
 </pre></div>
-</div><video src="cross_entropy.mp4?v=1790272523" autoplay loop muted playsinline></video></div>
+</div><video src="cross_entropy.mp4?v=1792346911" autoplay loop muted playsinline></video></div>
 <h2>No target at all</h2>
 <p>$$z \leftarrow z + \eta\,(z - z^3) + \eta\lambda\,\nabla^2 z$$</p>
 <p>Swap the label for a term that pushes each pixel away from zero, toward
@@ -228,4 +229,4 @@ either $+1$ or $-1$, and keep the smoothing. Nothing is being fitted now.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">no_target_at_all</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">z</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">z</span> <span class="o">-</span> <span class="n">z</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">smooth</span> <span class="o">*</span> <span class="n">lap</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 </pre></div>
-</div><video src="no_target_at_all.mp4?v=1790272524" autoplay loop muted playsinline></video></div>
+</div><video src="no_target_at_all.mp4?v=1792346912" autoplay loop muted playsinline></video></div>

@@ -1,6 +1,7 @@
 # %% [markdown]
 # # Gradients
 #
+# <!-- page: fun -->
 
 # %%
 import jax

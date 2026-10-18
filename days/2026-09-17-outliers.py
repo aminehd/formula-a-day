@@ -1,6 +1,7 @@
 # %% [markdown]
 # # Outliers
 #
+# <!-- page: fun -->
 
 # %%
 import jax.numpy as jnp

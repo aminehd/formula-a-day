@@ -2,6 +2,7 @@
 # # Distributions
 #
 #
+# <!-- page: fun -->
 
 # %%
 import jax
@@ -9,13 +10,12 @@ import jax.numpy as jnp
 import numpy as np
 import jaxvis
 import fad
+from jaxvis import data, tint
 
 fad.day(__file__)
 
 n = 80_000
 rng = np.random.default_rng(0)
-cloud = dict(rep={(n, 2): "points"}, only="points", structural=True,
-             size=640, tween=30, hold=8, duration=55)
 
 # %% [markdown]
 # ## Adding uniforms
@@ -51,18 +51,12 @@ def central_limit(state):
 # $$z = L^{-1}(x - \mu), \qquad LL^{\top} = \Sigma$$
 # %%
 
-tilted = rng.multivariate_normal([0.9, -0.5], [[2.2, 1.6], [1.6, 1.4]], n)
-mu = tilted.mean(0)
-chol = np.linalg.cholesky(np.cov(tilted.T))
-unmix = np.linalg.inv(chol).T
-
-ang = (np.arctan2(tilted[:, 1] - mu[1], tilted[:, 0] - mu[0]) + np.pi) / (2 * np.pi)
-wheel = np.stack([np.sin(np.pi * ang), np.sin(np.pi * (ang + 1 / 3)),
-                  np.sin(np.pi * (ang + 2 / 3))], 1) ** 2
-wheel = wheel / wheel.max(1, keepdims=True)
+tilted = data.tilted(n)
+mu = np.asarray(tilted).mean(0)
+unmix = np.linalg.inv(np.linalg.cholesky(np.cov(np.asarray(tilted).T))).T
 
 
-@jaxvis.draw(jnp.asarray(tilted), palette="bloom", colors=wheel, blend="mean",
-             frame="fixed", **cloud)
+@jaxvis.draw(tilted, colors=tint.by_angle(tilted), frame="fixed",
+             **jaxvis.cloud(tilted))
 def whiten(x):
     return (x - mu) @ unmix
