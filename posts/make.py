@@ -8,6 +8,7 @@ together: formula on top, code under it, animation beside them.
     python posts/make.py          -> docs/posts/*.gif
 """
 import io
+import sys
 import subprocess
 import tempfile
 from pathlib import Path
@@ -141,8 +142,8 @@ def spans_of(code, th):
     return rows
 
 
-def frames_of(mp4, every=2, height=None):
-    "Decode an mp4 to PIL frames, keeping every nth."
+def frames_of(mp4, every=2, width=None):
+    "Decode an mp4 to PIL frames, keeping every nth, scaled to one width."
     with tempfile.TemporaryDirectory() as td:
         subprocess.run(["ffmpeg", "-v", "error", "-i", str(mp4),
                         f"{td}/%04d.png"], check=True)
@@ -150,9 +151,9 @@ def frames_of(mp4, every=2, height=None):
         out = []
         for f in fs:
             im = Image.open(f).convert("RGB")
-            if height and im.height != height:
-                w = round(im.width * height / im.height)
-                im = im.resize((w, height), Image.LANCZOS)
+            if width and im.width != width:
+                h = round(im.height * width / im.width)
+                im = im.resize((width, h), Image.LANCZOS)
             out.append(im)
         return out
 
@@ -177,82 +178,86 @@ def formula_img(tex, px=34, color=FG):
                       max(1, round(im.height * scale))), Image.LANCZOS)
 
 
-def panel(w, h, tex, code, foot, th):
-    """The still half: formula, code, footer.
+def panel(w, tex, code, foot, th):
+    """The top row: formula, code, footer. Height follows the content.
 
-    The code font is FITTED, not chosen: a decorator line is long, and a
-    fixed size either overflows the panel or collides with the footer
-    depending on the snippet. Shrink until both fit -- but start large and
-    stop early, because legibility on a phone is the whole point.
+    In the stacked layout the width is fixed by the clip underneath, so the
+    font is a fraction of it rather than something fitted -- except for the
+    one guard that a long line must still not run off the edge.
     """
-    im = Image.new("RGB", (w, h), th["bg"])
-    d = ImageDraw.Draw(im)
-    pad = round(w * 0.050)
-    y = round(pad * 1.4)
+    pad = round(w * 0.055)
+    rows = spans_of(code.strip("\n"), th)
+    widest = max(len("".join(t for t, _ in r)) for r in rows)
 
-    fi = formula_img(tex, px=round(w * 0.033), color=th["fg"])
+    probe = ImageDraw.Draw(Image.new("RGB", (8, 8)))
+    size = round(w * 0.0335)
+    while size > 9 and probe.textlength("M" * widest,
+                                        font=ImageFont.truetype(MONO, size)) > w - 2 * pad:
+        size -= 1
+    f_code = ImageFont.truetype(MONO, size)
+    lh = round(size * 1.55)
+
+    fi = formula_img(tex, px=round(w * 0.036), color=th["fg"])
     if fi.width > w - 2 * pad:                 # never let it run off the edge
         s_ = (w - 2 * pad) / fi.width
         fi = fi.resize((round(fi.width * s_), round(fi.height * s_)),
                        Image.LANCZOS)
+
+    foot_px = round(w * 0.024)
+    gap = round(w * 0.032)
+    h = pad + fi.height + gap + gap + len(rows) * lh + gap + foot_px + pad
+
+    im = Image.new("RGB", (w, h), th["bg"])
+    d = ImageDraw.Draw(im)
+    y = pad
     im.paste(fi, (pad, y), fi)
-    y += fi.height + round(w * 0.034)
+    y += fi.height + gap
 
     d.line([(pad, y), (w - pad, y)], fill=th["rule"], width=1)
-    y += round(w * 0.030)
+    y += gap
 
-    rows = spans_of(code.strip("\n"), th)
-    widest = max(len("".join(t for t, _ in r)) for r in rows)
-    foot_px = round(w * 0.0245)
-    room_w, room_h = w - 2 * pad, h - round(pad * 1.6) - foot_px - y
-    size = round(w * 0.038)
-    while size > 11:
-        f = ImageFont.truetype(MONO, size)
-        if (d.textlength("M" * widest, font=f) <= room_w
-                and len(rows) * size * 1.5 <= room_h):
-            break
-        size -= 1
-    f_code = ImageFont.truetype(MONO, size)
     adv = d.textlength("M", font=f_code)      # monospace: one width for all
-    lh = round(size * 1.5)
     for row in rows:
         x = pad
         for text, col in row:
             d.text((x, y), text, font=f_code, fill=col)
             x += adv * len(text)
         y += lh
+    y += gap
 
     f_foot = ImageFont.truetype(MONO, foot_px)
-    d.text((pad, h - round(pad * 0.9) - foot_px), foot, font=f_foot, fill=th["dim"])
+    d.text((pad, y), foot, font=f_foot, fill=th["dim"])
     return im
 
 
-def postcard(mp4, tex, code, name, foot="jaxvis", every=2, theme="dark",
-             clip_px=600, panel_ratio=1.52, colors=128, title=None,
-             white=None):
-    # Discord rejects anything over 10 MB, so the palette and the pixel
-    # height are the two knobs that matter. A dense 60k-point cloud dithers
-    # badly and needs a smaller frame than a line drawing does.
+def postcard(mp4, tex, code, name, foot="github.com/aminehd/jaxvis", every=2,
+             theme="light", width=620, colors=128, white=None, title=None):
+    """One column: the code above, the animation below.
+
+    Discord scales an image down to its column width, so a WIDE card makes
+    the code tiny no matter how big it was in the file. Stacking keeps the
+    card narrow, which is what actually keeps the text readable in a post.
+    """
     th = THEMES[theme]
     white = white or {}
-    fs = frames_of(mp4, every=every, height=clip_px)
+    fs = frames_of(mp4, every=every, width=width)
     if th["invert"]:
         fs = [on_white(f, **white) for f in fs]
-    ch = fs[0].height
-    pw = round(ch * panel_ratio)
-    still = panel(pw, ch, tex, code, foot, th)
+    still = panel(width, tex, code, foot, th)
+    h = still.height + fs[0].height
+
     out = []
     for f in fs:
-        c = Image.new("RGB", (pw + f.width, ch), th["bg"])
+        c = Image.new("RGB", (width, h), th["bg"])
         c.paste(still, (0, 0))
-        c.paste(f, (pw, 0))
+        c.paste(f, (0, still.height))
         out.append(c.convert("P", palette=Image.ADAPTIVE, colors=colors))
     OUT.mkdir(parents=True, exist_ok=True)
-    p = OUT / (f"{name}.gif" if theme == "dark" else f"{name}-{theme}.gif")
+    p = OUT / (f"{name}.gif" if theme == "light" else f"{name}-{theme}.gif")
     out[0].save(p, save_all=True, append_images=out[1:], loop=0,
                 duration=70, optimize=True, disposal=2)
     mb = p.stat().st_size / 1e6
-    print(f"  {p.name}  {len(out)} frames  {c.size[0]}x{c.size[1]}  {mb:.1f} MB")
+    print(f"  {p.name}  {len(out)} frames  {width}x{h}  {mb:.1f} MB")
     return p
 
 
@@ -260,43 +265,58 @@ POSTS = [
     dict(
         name="sigmoid",
         mp4=DOCS / "2026-10-17-one-dimension" / "sigmoid.mp4",
-        title="the squash, one primitive at a time",
         tex=r"$\sigma(x)=\dfrac{1}{1+e^{-x}}$",
         code="""x = jaxvis.rail(-6.0, 6.0, 500)
 
 @jaxvis.analyze(x, **jaxvis.curve(x))
 def sigmoid(p):
     return 1.0 / (1.0 + jnp.exp(-p))""",
-        foot="github.com/aminehd/jaxvis",
+    ),
+    dict(
+        name="tanh",
+        mp4=DOCS / "2026-10-17-one-dimension" / "tanh.mp4",
+        tex=r"$\tanh(x)=\dfrac{e^{x}-e^{-x}}{e^{x}+e^{-x}}$",
+        every=3,
+        code="""@jaxvis.analyze(x, **jaxvis.curve(x))
+def tanh(p):
+    up, down = jnp.exp(p), jnp.exp(-p)
+    return (up - down) / (up + down)""",
+    ),
+    dict(
+        name="gelu",
+        mp4=DOCS / "2026-10-17-one-dimension" / "gelu.mp4",
+        tex=r"$\mathrm{gelu}(x)=\dfrac{x}{2}\left(1+\tanh\left[c\,(x+0.045x^{3})\right]\right)$",
+        every=4,
+        code="""@jaxvis.analyze(x, **jaxvis.curve(x))
+def gelu(p):
+    inner = 0.798 * (p + 0.045 * p ** 3)
+    return 0.5 * p * (1 + jnp.tanh(inner))""",
     ),
     dict(
         name="cloud",
         mp4=DOCS / "2026-10-15-building-blocks" / "the_squash.mp4",
-        title="60,000 points, pressed into a square",
         tex=r"$y=\tanh(kx)$",
-        clip_px=460, colors=96,
+        width=460, colors=48, every=3,
         code="""g = sheet()     # 60,000 points
 
 @jaxvis.analyze(g, **jaxvis.cloud(g))
 def the_squash(p):
     return jnp.tanh(1.6 * p)""",
-        foot="github.com/aminehd/jaxvis",
     ),
     dict(
         name="provenance",
         mp4=DOCS / "2026-10-18-came-from" / "permutation.mp4",
-        title="colour means WHICH INPUT, not value",
         tex=r"$y=Mx,\ \ M_{ij}=[\,i+j=n-1\,]$",
         white=dict(chroma=2.4, lift=0.30),
         code="""i = jnp.arange(8)
 M = (i[:, None] + i[None, :] == 7) * 1.0
 
 jaxvis.grains(M, x)""",
-        foot="github.com/aminehd/jaxvis",
     ),
 ]
 
 if __name__ == "__main__":
+    only = set(sys.argv[1:])
     for p in POSTS:
-        for theme in ("dark", "light"):
-            postcard(theme=theme, **p)
+        if not only or p["name"] in only:
+            postcard(**p)

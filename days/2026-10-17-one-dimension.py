@@ -35,6 +35,22 @@ def sigmoid(p):
 
 
 # %% [markdown]
+# ## The symmetric squash
+#
+# $$\tanh(x) = \frac{e^{x} - e^{-x}}{e^{x} + e^{-x}}$$
+#
+# The same squash, centred on zero: one exponential running each way,
+# and their difference over their sum.
+#
+
+# %%
+@jaxvis.draw(x, **jaxvis.curve(x, ylim=(-1.35, 1.35), palette="bloom"))
+def tanh(p):
+    up, down = jnp.exp(p), jnp.exp(-p)
+    return (up - down) / (up + down)
+
+
+# %% [markdown]
 # ## The soft hinge
 #
 # $$\operatorname{softplus}(x) = \log(1 + e^{x})$$

@@ -205,7 +205,17 @@ into a window one unit tall.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">sigmoid</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="p">))</span>
 </pre></div>
-</div><video src="2026-10-17-one-dimension/sigmoid.mp4?v=1792330847" autoplay loop muted playsinline></video></div>
+</div><video src="2026-10-17-one-dimension/sigmoid.mp4?v=1792357210" autoplay loop muted playsinline></video></div>
+<h2>The symmetric squash</h2>
+<p>$$\tanh(x) = \frac{e^{x} - e^{-x}}{e^{x} + e^{-x}}$$</p>
+<p>The same squash, centred on zero: one exponential running each way,
+and their difference over their sum.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">1.35</span><span class="p">,</span> <span class="mf">1.35</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"bloom"</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tanh</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">up</span><span class="p">,</span> <span class="n">down</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">up</span> <span class="o">-</span> <span class="n">down</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">up</span> <span class="o">+</span> <span class="n">down</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-10-17-one-dimension/tanh.mp4?v=1792357212" autoplay loop muted playsinline></video></div>
 <h2>The soft hinge</h2>
 <p>$$\operatorname{softplus}(x) = \log(1 + e^{x})$$</p>
 <p>The same exponential. The log turns a wall into a hinge.</p>
@@ -214,7 +224,7 @@ into a window one unit tall.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">softplus</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
 </pre></div>
-</div><video src="2026-10-17-one-dimension/softplus.mp4?v=1792330848" autoplay loop muted playsinline></video></div>
+</div><video src="2026-10-17-one-dimension/softplus.mp4?v=1792357210" autoplay loop muted playsinline></video></div>
 <h2>GELU</h2>
 <p>$$\operatorname{gelu}(x) \approx \tfrac{1}{2}x\left(1 +
   \tanh!\left[\sqrt{\tfrac{2}{\pi}}\left(x + 0.044715x^{3}\right)\right]\right)$$</p>
@@ -225,7 +235,7 @@ the part ReLU does not have, arrives in the last multiply.</p>
     <span class="n">inner</span> <span class="o">=</span> <span class="mf">0.7978845608</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mf">0.044715</span> <span class="o">*</span> <span class="n">p</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span>
     <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">inner</span><span class="p">))</span>
 </pre></div>
-</div><video src="2026-10-17-one-dimension/gelu.mp4?v=1792330846" autoplay loop muted playsinline></video></div>
+</div><video src="2026-10-17-one-dimension/gelu.mp4?v=1792357209" autoplay loop muted playsinline></video></div>
 <h2>A square out of sines</h2>
 <p>$$f(t) = \sin t + \tfrac{1}{3}\sin 3t + \tfrac{1}{5}\sin 5t +
   \tfrac{1}{7}\sin 7t$$</p>
@@ -241,7 +251,7 @@ the corners. A self-rescaling window would hide every division.</p>
     <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="mf">5.0</span>
     <span class="k">return</span> <span class="n">y</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">7.0</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="mf">7.0</span>
 </pre></div>
-</div><video src="2026-10-17-one-dimension/square_wave.mp4?v=1792330849" autoplay loop muted playsinline></video></div>
+</div><video src="2026-10-17-one-dimension/square_wave.mp4?v=1792357211" autoplay loop muted playsinline></video></div>
 <h2>The bell</h2>
 <p>$$y = e^{-x^{2}/2}$$</p>
 <p>Square, negate, halve, exponentiate. The parabola falls off the bottom
@@ -251,7 +261,7 @@ and comes back bounded.</p>
 <span class="k">def</span><span class="w"> </span><span class="nf">bell</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">p</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-10-17-one-dimension/bell.mp4?v=1792330845" autoplay loop muted playsinline></video></div>
+</div><video src="2026-10-17-one-dimension/bell.mp4?v=1792357208" autoplay loop muted playsinline></video></div>
 <h2>Ringing down</h2>
 <p>$$y = e^{-t/3}\sin 4t$$</p>
 <p>The envelope is never drawn. It is one multiply, and you see it as
