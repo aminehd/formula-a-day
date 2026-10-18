@@ -1,18 +1,11 @@
 # %% [markdown]
 # # One dimension
 #
-# A point cloud shows you where things go. A curve shows you what a
-# function *is*. Same machinery underneath: every line below is one
-# jaxpr, drawn one primitive at a time, so each frame is a real
-# intermediate value and not an illustration of one.
-#
-# Each clip starts as a flat line at zero, rises into the input
-# $y = x$, and from there every bend is one more primitive. The
-# caption under the frame names the one you are looking at.
+# Every clip starts flat at zero, rises into $y = x$, and from there
+# each bend is one more primitive. The caption names it.
 #
 # The window is fixed, so a curve that leaves it is pinned dimly to
-# the edge rather than disappearing -- an exponential on its way up
-# is still somewhere.
+# the edge instead of disappearing.
 #
 
 # %%
@@ -30,11 +23,9 @@ x = jaxvis.rail(-6.0, 6.0, 500)
 #
 # $$\sigma(x) = \frac{1}{1 + e^{-x}}$$
 #
-# Four primitives: negate, exponentiate, add one, divide. The straight
-# sloping line early on is $-x$ -- negation is a reflection, and a
-# reflected straight line is still a straight line. Then the
-# exponential blows up off the top of the frame, and the division
-# folds it back into a window one unit tall.
+# Negate, exponentiate, add one, divide. The straight sloping line is
+# $-x$. The exponential blows off the top; the division folds it back
+# into a window one unit tall.
 #
 
 # %%
@@ -48,8 +39,7 @@ def sigmoid(p):
 #
 # $$\operatorname{softplus}(x) = \log(1 + e^{x})$$
 #
-# The same exponential, bent the other way. The log is what turns a
-# wall into a hinge.
+# The same exponential. The log turns a wall into a hinge.
 #
 
 # %%
@@ -65,10 +55,8 @@ def softplus(p):
 # $$\operatorname{gelu}(x) \approx \tfrac{1}{2}x\left(1 +
 #   \tanh\!\left[\sqrt{\tfrac{2}{\pi}}\left(x + 0.044715x^{3}\right)\right]\right)$$
 #
-# The activation inside almost every transformer you will ever profile.
-# It is a sigmoid-shaped gate multiplied back onto $x$ — and the dip
-# just left of zero, the part a ReLU does not have, arrives in the very
-# last multiply.
+# A sigmoid-shaped gate multiplied back onto $x$. The dip left of zero,
+# the part ReLU does not have, arrives in the last multiply.
 #
 
 # %%
@@ -84,10 +72,8 @@ def gelu(p):
 # $$f(t) = \sin t + \tfrac{1}{3}\sin 3t + \tfrac{1}{5}\sin 5t +
 #   \tfrac{1}{7}\sin 7t$$
 #
-# On a fixed window the corrections are finally visible: each harmonic
-# arrives at full height, gets divided down, and settles into the
-# corners. A window that rescales itself every frame would hide exactly
-# that — the division would animate as nothing happening at all.
+# Each harmonic arrives at full height, gets divided down, settles into
+# the corners. A self-rescaling window would hide every division.
 #
 
 # %%
@@ -107,8 +93,8 @@ def square_wave(p):
 #
 # $$y = e^{-x^{2}/2}$$
 #
-# Square, negate, halve, exponentiate. The parabola that falls off the
-# bottom of the frame comes back as the only bounded shape in the file.
+# Square, negate, halve, exponentiate. The parabola falls off the bottom
+# and comes back bounded.
 #
 
 # %%
@@ -123,9 +109,8 @@ def bell(p):
 #
 # $$y = e^{-t/3}\sin 4t$$
 #
-# A sine multiplied by a decay. The envelope never gets drawn — it is
-# the one multiply at the end, and you see it as the whole curve being
-# pulled toward the axis from the right.
+# The envelope is never drawn. It is one multiply, and you see it as
+# the curve being pulled to the axis from the right.
 #
 
 # %%

@@ -176,27 +176,104 @@ addEventListener('click', e => {
 </script>
 
 <h1>a formula a day</h1>
-<p>I made a <a href="https://github.com/aminehd/jaxvis">framework for JAX visualisation</a> where you can annotate your JAX-compatible function with it, and after it runs it generates a graph with the output of each intermediate operation that JAX generated. There is also another visualizer, which visualizes the transformation that happens to the function's input when the function is applied. You can think about grad as one such transformation.</p>
-<p>I think seeing these formulas can be very helpful in learning them, and the generated images can be another learning channel for multimodal models or for agents to "see" what equations look like.</p>
-<p>On this website, I am gonna experiment with different functions each day and publish if they turned out alright. Btw, to generate the images, I just need to annotate them with <code>jaxvis.draw</code>.</p>
-<p>If you want to see more randomly generated things &mdash; shapes, flows and clouds made for no reason at all &mdash; <a href="fun.html">they are all on this page</a>.</p>
-<p class=dim><a href="#2026-10-18-came-from">came from</a> &middot; <a href="#2026-10-17-one-dimension">one dimension</a></p>
+<p><a href="https://github.com/aminehd/jaxvis">jaxvis</a> animates a JAX function by walking its jaxpr, so every frame is a real intermediate value and not a drawing of one. Annotate the function, run it, get the clip.</p>
+<p>One formula a day, published when it turns out well.</p>
+<p>If you want to see more randomly generated things — shapes, flows and clouds made for no reason at all — <a href="fun.html">they are all on this page</a>.</p>
+<p class=dim><a href="#2026-10-17-one-dimension">one dimension</a> &middot; <a href="#2026-10-18-came-from">came from</a></p>
+<hr id="2026-10-17-one-dimension" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
+<div class=dim>2026-10-17 &middot; <a class=back href="2026-10-17-one-dimension/index.html">permalink</a></div>
+<div class=dayhead>One dimension</div>
+<p>Every clip starts flat at zero, rises into $y = x$, and from there
+each bend is one more primitive. The caption names it.</p>
+<p>The window is fixed, so a curve that leaves it is pinned dimly to
+the edge instead of disappearing.</p>
+<div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jaxvis</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">fad</span>
+
+<span class="n">fad</span><span class="o">.</span><span class="n">day</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">jaxvis</span><span class="o">.</span><span class="n">rail</span><span class="p">(</span><span class="o">-</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+</pre></div>
+</div>
+<h2>The squash</h2>
+<p>$$\sigma(x) = \frac{1}{1 + e^{-x}}$$</p>
+<p>Negate, exponentiate, add one, divide. The straight sloping line is
+$-x$. The exponential blows off the top; the division folds it back
+into a window one unit tall.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.35</span><span class="p">,</span> <span class="mf">1.35</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"vapor"</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sigmoid</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="p">))</span>
+</pre></div>
+</div><video src="2026-10-17-one-dimension/sigmoid.mp4?v=1792330847" autoplay loop muted playsinline></video></div>
+<h2>The soft hinge</h2>
+<p>$$\operatorname{softplus}(x) = \log(1 + e^{x})$$</p>
+<p>The same exponential. The log turns a wall into a hinge.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span>
+                               <span class="n">fill</span><span class="o">=</span><span class="mf">0.08</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">softplus</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+</pre></div>
+</div><video src="2026-10-17-one-dimension/softplus.mp4?v=1792330848" autoplay loop muted playsinline></video></div>
+<h2>GELU</h2>
+<p>$$\operatorname{gelu}(x) \approx \tfrac{1}{2}x\left(1 +
+  \tanh!\left[\sqrt{\tfrac{2}{\pi}}\left(x + 0.044715x^{3}\right)\right]\right)$$</p>
+<p>A sigmoid-shaped gate multiplied back onto $x$. The dip left of zero,
+the part ReLU does not have, arrives in the last multiply.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"bloom"</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gelu</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">inner</span> <span class="o">=</span> <span class="mf">0.7978845608</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mf">0.044715</span> <span class="o">*</span> <span class="n">p</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">inner</span><span class="p">))</span>
+</pre></div>
+</div><video src="2026-10-17-one-dimension/gelu.mp4?v=1792330846" autoplay loop muted playsinline></video></div>
+<h2>A square out of sines</h2>
+<p>$$f(t) = \sin t + \tfrac{1}{3}\sin 3t + \tfrac{1}{5}\sin 5t +
+  \tfrac{1}{7}\sin 7t$$</p>
+<p>Each harmonic arrives at full height, gets divided down, settles into
+the corners. A self-rescaling window would hide every division.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">jaxvis</span><span class="o">.</span><span class="n">rail</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+
+
+<span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">1.45</span><span class="p">,</span> <span class="mf">1.45</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"vapor"</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">square_wave</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">3.0</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="mf">3.0</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="mf">5.0</span>
+    <span class="k">return</span> <span class="n">y</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">7.0</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="mf">7.0</span>
+</pre></div>
+</div><video src="2026-10-17-one-dimension/square_wave.mp4?v=1792330849" autoplay loop muted playsinline></video></div>
+<h2>The bell</h2>
+<p>$$y = e^{-x^{2}/2}$$</p>
+<p>Square, negate, halve, exponentiate. The parabola falls off the bottom
+and comes back bounded.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ember"</span><span class="p">,</span>
+                               <span class="n">fill</span><span class="o">=</span><span class="mf">0.10</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bell</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">p</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-10-17-one-dimension/bell.mp4?v=1792330845" autoplay loop muted playsinline></video></div>
+<h2>Ringing down</h2>
+<p>$$y = e^{-t/3}\sin 4t$$</p>
+<p>The envelope is never drawn. It is one multiply, and you see it as
+the curve being pulled to the axis from the right.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">jaxvis</span><span class="o">.</span><span class="n">rail</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+
+
+<span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">1.15</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ring_down</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-10-17-one-dimension/ring_down.mp4?v=1792330847" autoplay loop muted playsinline></video></div>
 <hr id="2026-10-18-came-from" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
 <div class=dim>2026-10-18 &middot; <a class=back href="2026-10-18-came-from/index.html">permalink</a></div>
 <div class=dayhead>Where it came from</div>
-<p>The wiring view shows the structure of a matrix, but every wire looks
-like every other wire. Stand at an output square and you still cannot
-say which inputs built it.</p>
-<p>So stop using colour for value and use it for <strong>identity</strong>. Each input
-is a small $9 \times 9$ block of grains with its own hue. Input $j$'s
-grains are divided among the outputs in proportion to
-$|M_{ij}x_j|$ — the share of $j$ that output $i$ actually used — and
-each grain crosses on its own path, at its own moment.</p>
-<p>What piles up at the top is a mixture, and the colour of that mixture
-<em>is</em> the provenance of the output. An output that comes from one
-place is one clean colour. An output that averages everything is
-grey. The number of grains in a pile is how much landed there, so
-magnitude comes along for free.</p>
+<!-- order: 9 -->
+
+<p>Colour means <strong>which input</strong>, not value. Each input is a $9\times9$
+block of grains, split among the outputs in proportion to
+$|M_{ij}x_j|$ — the share of $j$ that output $i$ used.</p>
+<p>What piles up at the top is the provenance. One source, one colour.
+Everything averaged, grey.</p>
 <div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jaxvis</span>
@@ -211,149 +288,36 @@ magnitude comes along for free.</p>
 </div>
 <h2>A permutation</h2>
 <p>$$M_{ij} = [\,i + j = n - 1\,]$$</p>
-<p>The cleanest case, and the one to look at first. Every input sends
-all $81$ of its grains to exactly one output, so each pile at the top
-is a single pure hue — and the hues come out in reverse order. No
-mixing anywhere, which is precisely what a permutation promises.</p>
+<p>Every input goes to exactly one output. Eight pure hues, reversed.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">grains</span><span class="p">((</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
               <span class="n">name</span><span class="o">=</span><span class="s2">"permutation"</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-10-18-came-from/permutation.mp4?v=1792347875" autoplay loop muted playsinline></video></div>
+</div><video src="2026-10-18-came-from/permutation.mp4?v=1792348735" autoplay loop muted playsinline></video></div>
 <h2>A running total</h2>
 <p>$$M_{ij} = [\,i \ge j\,]$$</p>
-<p>Now watch the piles differ. The leftmost output holds grains of one
-colour, because only the first input reaches it. The rightmost holds
-every colour there is. The gradient from pure to mixed, left to
-right, is the prefix sum — said in a way no list of numbers says it.</p>
+<p>Pure on the left, every colour on the right. That gradient is the
+prefix sum.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">grains</span><span class="p">((</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"running_total"</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-10-18-came-from/running_total.mp4?v=1792347876" autoplay loop muted playsinline></video></div>
+</div><video src="2026-10-18-came-from/running_total.mp4?v=1792348736" autoplay loop muted playsinline></video></div>
 <h2>Local averaging</h2>
 <p>$$M_{ij} = \tfrac{1}{3}\,[\,|i - j| \le 1\,]$$</p>
-<p>Three colours in every pile, always its own and its two neighbours',
-never more. Each input splits its grains three ways and they do not
-travel far. A blur is a local mixture, and this is what local looks
-like when you can see the sources.</p>
+<p>Three colours per pile, always its own and its neighbours'. That is
+what local means.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">grains</span><span class="p">((</span><span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
               <span class="n">name</span><span class="o">=</span><span class="s2">"local_average"</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-10-18-came-from/local_average.mp4?v=1792347875" autoplay loop muted playsinline></video></div>
+</div><video src="2026-10-18-came-from/local_average.mp4?v=1792348735" autoplay loop muted playsinline></video></div>
 <h2>A learned weight matrix</h2>
 <p>$$M_{ij} \sim \mathcal{N}(0, 1)$$</p>
-<p>Every pile gets grains from everywhere, so every pile is the same
-muddy grey. That greyness is not a failure of the picture — it is the
-honest answer. Asking <em>where did this activation come from</em> in a
-dense layer has no short answer, and this is what no short answer
-looks like.</p>
+<p>Grey everywhere. "Where did this activation come from" has no short
+answer in a dense layer, and this is what no short answer looks like.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">W</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.4</span><span class="p">)</span>
 
 <span class="n">jaxvis</span><span class="o">.</span><span class="n">grains</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"dense"</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
 </pre></div>
-</div><video src="2026-10-18-came-from/dense.mp4?v=1792347874" autoplay loop muted playsinline></video></div>
+</div><video src="2026-10-18-came-from/dense.mp4?v=1792348734" autoplay loop muted playsinline></video></div>
 <h2>Try it</h2>
-<pre><code class="language-python">import jaxvis
-jaxvis.grains(M, x, name=&quot;mine&quot;)
+<pre><code class="language-python">jaxvis.grains(M, x, name=&quot;mine&quot;)
 </code></pre>
-<p><code>k</code> sets the block size (9 means 81 grains per input), <code>spread</code> how
-staggered the departures are, <code>travel</code> how fast a grain crosses, and
-<code>seed</code> reshuffles which grain goes where.</p>
 <p><a href="https://github.com/aminehd/jaxvis">github.com/aminehd/jaxvis</a></p>
-<hr id="2026-10-17-one-dimension" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
-<div class=dim>2026-10-17 &middot; <a class=back href="2026-10-17-one-dimension/index.html">permalink</a></div>
-<div class=dayhead>One dimension</div>
-<p>A point cloud shows you where things go. A curve shows you what a
-function <em>is</em>. Same machinery underneath: every line below is one
-jaxpr, drawn one primitive at a time, so each frame is a real
-intermediate value and not an illustration of one.</p>
-<p>Each clip starts as a flat line at zero, rises into the input
-$y = x$, and from there every bend is one more primitive. The
-caption under the frame names the one you are looking at.</p>
-<p>The window is fixed, so a curve that leaves it is pinned dimly to
-the edge rather than disappearing -- an exponential on its way up
-is still somewhere.</p>
-<div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">jaxvis</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">fad</span>
-
-<span class="n">fad</span><span class="o">.</span><span class="n">day</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
-
-<span class="n">x</span> <span class="o">=</span> <span class="n">jaxvis</span><span class="o">.</span><span class="n">rail</span><span class="p">(</span><span class="o">-</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
-</pre></div>
-</div>
-<h2>The squash</h2>
-<p>$$\sigma(x) = \frac{1}{1 + e^{-x}}$$</p>
-<p>Four primitives: negate, exponentiate, add one, divide. The straight
-sloping line early on is $-x$ -- negation is a reflection, and a
-reflected straight line is still a straight line. Then the
-exponential blows up off the top of the frame, and the division
-folds it back into a window one unit tall.</p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.35</span><span class="p">,</span> <span class="mf">1.35</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"vapor"</span><span class="p">))</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">sigmoid</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span><span class="p">))</span>
-</pre></div>
-</div><video src="2026-10-17-one-dimension/sigmoid.mp4?v=1792330847" autoplay loop muted playsinline></video></div>
-<h2>The soft hinge</h2>
-<p>$$\operatorname{softplus}(x) = \log(1 + e^{x})$$</p>
-<p>The same exponential, bent the other way. The log is what turns a
-wall into a hinge.</p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">,</span>
-                               <span class="n">fill</span><span class="o">=</span><span class="mf">0.08</span><span class="p">))</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">softplus</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
-</pre></div>
-</div><video src="2026-10-17-one-dimension/softplus.mp4?v=1792330848" autoplay loop muted playsinline></video></div>
-<h2>GELU</h2>
-<p>$$\operatorname{gelu}(x) \approx \tfrac{1}{2}x\left(1 +
-  \tanh!\left[\sqrt{\tfrac{2}{\pi}}\left(x + 0.044715x^{3}\right)\right]\right)$$</p>
-<p>The activation inside almost every transformer you will ever profile.
-It is a sigmoid-shaped gate multiplied back onto $x$ — and the dip
-just left of zero, the part a ReLU does not have, arrives in the very
-last multiply.</p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">6.5</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"bloom"</span><span class="p">))</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">gelu</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="n">inner</span> <span class="o">=</span> <span class="mf">0.7978845608</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mf">0.044715</span> <span class="o">*</span> <span class="n">p</span> <span class="o">**</span> <span class="mi">3</span><span class="p">)</span>
-    <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">inner</span><span class="p">))</span>
-</pre></div>
-</div><video src="2026-10-17-one-dimension/gelu.mp4?v=1792330846" autoplay loop muted playsinline></video></div>
-<h2>A square out of sines</h2>
-<p>$$f(t) = \sin t + \tfrac{1}{3}\sin 3t + \tfrac{1}{5}\sin 5t +
-  \tfrac{1}{7}\sin 7t$$</p>
-<p>On a fixed window the corrections are finally visible: each harmonic
-arrives at full height, gets divided down, and settles into the
-corners. A window that rescales itself every frame would hide exactly
-that — the division would animate as nothing happening at all.</p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">jaxvis</span><span class="o">.</span><span class="n">rail</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
-
-
-<span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">1.45</span><span class="p">,</span> <span class="mf">1.45</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"vapor"</span><span class="p">))</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">square_wave</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">3.0</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="mf">3.0</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="mf">5.0</span>
-    <span class="k">return</span> <span class="n">y</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">7.0</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span> <span class="o">/</span> <span class="mf">7.0</span>
-</pre></div>
-</div><video src="2026-10-17-one-dimension/square_wave.mp4?v=1792330849" autoplay loop muted playsinline></video></div>
-<h2>The bell</h2>
-<p>$$y = e^{-x^{2}/2}$$</p>
-<p>Square, negate, halve, exponentiate. The parabola that falls off the
-bottom of the frame comes back as the only bounded shape in the file.</p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ember"</span><span class="p">,</span>
-                               <span class="n">fill</span><span class="o">=</span><span class="mf">0.10</span><span class="p">))</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">bell</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">p</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
-</pre></div>
-</div><video src="2026-10-17-one-dimension/bell.mp4?v=1792330845" autoplay loop muted playsinline></video></div>
-<h2>Ringing down</h2>
-<p>$$y = e^{-t/3}\sin 4t$$</p>
-<p>A sine multiplied by a decay. The envelope never gets drawn — it is
-the one multiply at the end, and you see it as the whole curve being
-pulled toward the axis from the right.</p>
-<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">jaxvis</span><span class="o">.</span><span class="n">rail</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
-
-
-<span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">1.15</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"ultra"</span><span class="p">))</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">ring_down</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span>
-</pre></div>
-</div><video src="2026-10-17-one-dimension/ring_down.mp4?v=1792330847" autoplay loop muted playsinline></video></div>
-<hr style="border:0;border-top:1px solid var(--line);margin:56px 0 18px"><p>If you want to see more randomly generated things &mdash; shapes, flows and clouds made for no reason at all &mdash; <a href="fun.html">they are all on this page</a>.</p>

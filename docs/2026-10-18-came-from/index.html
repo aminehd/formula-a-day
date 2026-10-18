@@ -177,19 +177,13 @@ addEventListener('click', e => {
 
 <a class=back href="../index.html">&larr; all of it</a>
 <h1>Where it came from</h1>
-<p>The wiring view shows the structure of a matrix, but every wire looks
-like every other wire. Stand at an output square and you still cannot
-say which inputs built it.</p>
-<p>So stop using colour for value and use it for <strong>identity</strong>. Each input
-is a small $9 \times 9$ block of grains with its own hue. Input $j$'s
-grains are divided among the outputs in proportion to
-$|M_{ij}x_j|$ — the share of $j$ that output $i$ actually used — and
-each grain crosses on its own path, at its own moment.</p>
-<p>What piles up at the top is a mixture, and the colour of that mixture
-<em>is</em> the provenance of the output. An output that comes from one
-place is one clean colour. An output that averages everything is
-grey. The number of grains in a pile is how much landed there, so
-magnitude comes along for free.</p>
+<!-- order: 9 -->
+
+<p>Colour means <strong>which input</strong>, not value. Each input is a $9\times9$
+block of grains, split among the outputs in proportion to
+$|M_{ij}x_j|$ — the share of $j$ that output $i$ used.</p>
+<p>What piles up at the top is the provenance. One source, one colour.
+Everything averaged, grey.</p>
 <div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">jaxvis</span>
@@ -204,50 +198,36 @@ magnitude comes along for free.</p>
 </div>
 <h2>A permutation</h2>
 <p>$$M_{ij} = [\,i + j = n - 1\,]$$</p>
-<p>The cleanest case, and the one to look at first. Every input sends
-all $81$ of its grains to exactly one output, so each pile at the top
-is a single pure hue — and the hues come out in reverse order. No
-mixing anywhere, which is precisely what a permutation promises.</p>
+<p>Every input goes to exactly one output. Eight pure hues, reversed.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">grains</span><span class="p">((</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
               <span class="n">name</span><span class="o">=</span><span class="s2">"permutation"</span><span class="p">)</span>
 </pre></div>
-</div><video src="permutation.mp4?v=1792347875" autoplay loop muted playsinline></video></div>
+</div><video src="permutation.mp4?v=1792348735" autoplay loop muted playsinline></video></div>
 <h2>A running total</h2>
 <p>$$M_{ij} = [\,i \ge j\,]$$</p>
-<p>Now watch the piles differ. The leftmost output holds grains of one
-colour, because only the first input reaches it. The rightmost holds
-every colour there is. The gradient from pure to mixed, left to
-right, is the prefix sum — said in a way no list of numbers says it.</p>
+<p>Pure on the left, every colour on the right. That gradient is the
+prefix sum.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">grains</span><span class="p">((</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"running_total"</span><span class="p">)</span>
 </pre></div>
-</div><video src="running_total.mp4?v=1792347876" autoplay loop muted playsinline></video></div>
+</div><video src="running_total.mp4?v=1792348736" autoplay loop muted playsinline></video></div>
 <h2>Local averaging</h2>
 <p>$$M_{ij} = \tfrac{1}{3}\,[\,|i - j| \le 1\,]$$</p>
-<p>Three colours in every pile, always its own and its two neighbours',
-never more. Each input splits its grains three ways and they do not
-travel far. A blur is a local mixture, and this is what local looks
-like when you can see the sources.</p>
+<p>Three colours per pile, always its own and its neighbours'. That is
+what local means.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">grains</span><span class="p">((</span><span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
               <span class="n">name</span><span class="o">=</span><span class="s2">"local_average"</span><span class="p">)</span>
 </pre></div>
-</div><video src="local_average.mp4?v=1792347875" autoplay loop muted playsinline></video></div>
+</div><video src="local_average.mp4?v=1792348735" autoplay loop muted playsinline></video></div>
 <h2>A learned weight matrix</h2>
 <p>$$M_{ij} \sim \mathcal{N}(0, 1)$$</p>
-<p>Every pile gets grains from everywhere, so every pile is the same
-muddy grey. That greyness is not a failure of the picture — it is the
-honest answer. Asking <em>where did this activation come from</em> in a
-dense layer has no short answer, and this is what no short answer
-looks like.</p>
+<p>Grey everywhere. "Where did this activation come from" has no short
+answer in a dense layer, and this is what no short answer looks like.</p>
 <div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">W</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.4</span><span class="p">)</span>
 
 <span class="n">jaxvis</span><span class="o">.</span><span class="n">grains</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"dense"</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
 </pre></div>
-</div><video src="dense.mp4?v=1792347874" autoplay loop muted playsinline></video></div>
+</div><video src="dense.mp4?v=1792348734" autoplay loop muted playsinline></video></div>
 <h2>Try it</h2>
-<pre><code class="language-python">import jaxvis
-jaxvis.grains(M, x, name=&quot;mine&quot;)
+<pre><code class="language-python">jaxvis.grains(M, x, name=&quot;mine&quot;)
 </code></pre>
-<p><code>k</code> sets the block size (9 means 81 grains per input), <code>spread</code> how
-staggered the departures are, <code>travel</code> how fast a grain crosses, and
-<code>seed</code> reshuffles which grain goes where.</p>
 <p><a href="https://github.com/aminehd/jaxvis">github.com/aminehd/jaxvis</a></p>
