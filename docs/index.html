@@ -180,7 +180,7 @@ addEventListener('click', e => {
 <p>I think seeing these formulas can be very helpful in learning them, and the generated images can be another learning channel for multimodal models or for agents to "see" what equations look like.</p>
 <p>On this website, I am gonna experiment with different functions each day and publish if they turned out alright. Btw, to generate the images, I just need to annotate them with <code>jaxvis.draw</code>.</p>
 <p>If you want to see more randomly generated things &mdash; shapes, flows and clouds made for no reason at all &mdash; <a href="fun.html">they are all on this page</a>.</p>
-<p class=dim><a href="#2026-10-18-linear">linear</a> &middot; <a href="#2026-10-17-one-dimension">one dimension</a></p>
+<p class=dim><a href="#2026-10-18-linear">linear</a> &middot; <a href="#2026-10-18-came-from">came from</a> &middot; <a href="#2026-10-17-one-dimension">one dimension</a></p>
 <hr id="2026-10-18-linear" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
 <div class=dim>2026-10-18 &middot; <a class=back href="2026-10-18-linear/index.html">permalink</a></div>
 <div class=dayhead>What a matrix does to a vector</div>
@@ -277,6 +277,83 @@ jaxvis.impact(M, x, name=&quot;mine&quot;)
 <p>The knobs: <code>spread</code> for how staggered the starts are, <code>travel</code> for
 how fast a pulse crosses, <code>lattice</code> for how visible the unlit wiring
 is, <code>palette</code>, and <code>seed</code> for a different random order.</p>
+<p><a href="https://github.com/aminehd/jaxvis">github.com/aminehd/jaxvis</a></p>
+<hr id="2026-10-18-came-from" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
+<div class=dim>2026-10-18 &middot; <a class=back href="2026-10-18-came-from/index.html">permalink</a></div>
+<div class=dayhead>Where it came from</div>
+<p>The wiring view shows the structure of a matrix, but every wire looks
+like every other wire. Stand at an output square and you still cannot
+say which inputs built it.</p>
+<p>So stop using colour for value and use it for <strong>identity</strong>. Each input
+is a small $9 \times 9$ block of grains with its own hue. Input $j$'s
+grains are divided among the outputs in proportion to
+$|M_{ij}x_j|$ — the share of $j$ that output $i$ actually used — and
+each grain crosses on its own path, at its own moment.</p>
+<p>What piles up at the top is a mixture, and the colour of that mixture
+<em>is</em> the provenance of the output. An output that comes from one
+place is one clean colour. An output that averages everything is
+grey. The number of grains in a pile is how much landed there, so
+magnitude comes along for free.</p>
+<div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jaxvis</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">fad</span>
+
+<span class="n">fad</span><span class="o">.</span><span class="n">day</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">i</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">2.8</span><span class="p">])</span>
+</pre></div>
+</div>
+<h2>A permutation</h2>
+<p>$$M_{ij} = [\,i + j = n - 1\,]$$</p>
+<p>The cleanest case, and the one to look at first. Every input sends
+all $81$ of its grains to exactly one output, so each pile at the top
+is a single pure hue — and the hues come out in reverse order. No
+mixing anywhere, which is precisely what a permutation promises.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">grains</span><span class="p">((</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
+              <span class="n">name</span><span class="o">=</span><span class="s2">"permutation"</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-10-18-came-from/permutation.mp4?v=1792347875" autoplay loop muted playsinline></video></div>
+<h2>A running total</h2>
+<p>$$M_{ij} = [\,i \ge j\,]$$</p>
+<p>Now watch the piles differ. The leftmost output holds grains of one
+colour, because only the first input reaches it. The rightmost holds
+every colour there is. The gradient from pure to mixed, left to
+right, is the prefix sum — said in a way no list of numbers says it.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">grains</span><span class="p">((</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"running_total"</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-10-18-came-from/running_total.mp4?v=1792347876" autoplay loop muted playsinline></video></div>
+<h2>Local averaging</h2>
+<p>$$M_{ij} = \tfrac{1}{3}\,[\,|i - j| \le 1\,]$$</p>
+<p>Three colours in every pile, always its own and its two neighbours',
+never more. Each input splits its grains three ways and they do not
+travel far. A blur is a local mixture, and this is what local looks
+like when you can see the sources.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">jaxvis</span><span class="o">.</span><span class="n">grains</span><span class="p">((</span><span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">i</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="n">i</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span>
+              <span class="n">name</span><span class="o">=</span><span class="s2">"local_average"</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-10-18-came-from/local_average.mp4?v=1792347875" autoplay loop muted playsinline></video></div>
+<h2>A learned weight matrix</h2>
+<p>$$M_{ij} \sim \mathcal{N}(0, 1)$$</p>
+<p>Every pile gets grains from everywhere, so every pile is the same
+muddy grey. That greyness is not a failure of the picture — it is the
+honest answer. Asking <em>where did this activation come from</em> in a
+dense layer has no short answer, and this is what no short answer
+looks like.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="n">W</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.4</span><span class="p">)</span>
+
+<span class="n">jaxvis</span><span class="o">.</span><span class="n">grains</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"dense"</span><span class="p">,</span> <span class="n">spread</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-10-18-came-from/dense.mp4?v=1792347874" autoplay loop muted playsinline></video></div>
+<h2>Try it</h2>
+<pre><code class="language-python">import jaxvis
+jaxvis.grains(M, x, name=&quot;mine&quot;)
+</code></pre>
+<p><code>k</code> sets the block size (9 means 81 grains per input), <code>spread</code> how
+staggered the departures are, <code>travel</code> how fast a grain crosses, and
+<code>seed</code> reshuffles which grain goes where.</p>
 <p><a href="https://github.com/aminehd/jaxvis">github.com/aminehd/jaxvis</a></p>
 <hr id="2026-10-17-one-dimension" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
 <div class=dim>2026-10-17 &middot; <a class=back href="2026-10-17-one-dimension/index.html">permalink</a></div>
