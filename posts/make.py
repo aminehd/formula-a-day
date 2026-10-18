@@ -46,7 +46,8 @@ DARK = dict(
 )
 LIGHT = dict(
     bg=(255, 255, 255), fg=(26, 26, 34), dim=(138, 142, 158),
-    rule=(222, 222, 230), invert=True,
+    rule=(222, 222, 230), invert=False,   # the clip stays on black: it is
+                                          # drawn as glow, and glow needs it
     syntax={
         "Keyword": (197, 20, 120),
         "Keyword.Namespace": (197, 20, 120),
