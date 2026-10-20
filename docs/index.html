@@ -179,7 +179,7 @@ addEventListener('click', e => {
 <p><a href="https://github.com/aminehd/jaxvis">jaxvis</a> animates a JAX function by walking its jaxpr, so every frame is a real intermediate value and not a drawing of one. Annotate the function, run it, get the clip.</p>
 <p>One formula a day, published when it turns out well.</p>
 <p>If you want to see more randomly generated things — shapes, flows and clouds made for no reason at all — <a href="fun.html">they are all on this page</a>.</p>
-<p class=dim><a href="#2026-10-17-one-dimension">one dimension</a> &middot; <a href="#2026-10-18-came-from">came from</a></p>
+<p class=dim><a href="#2026-10-17-one-dimension">one dimension</a> &middot; <a href="#2026-10-20-softmax">softmax</a> &middot; <a href="#2026-10-18-came-from">came from</a></p>
 <hr id="2026-10-17-one-dimension" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
 <div class=dim>2026-10-17 &middot; <a class=back href="2026-10-17-one-dimension/index.html">permalink</a></div>
 <div class=dayhead>One dimension</div>
@@ -274,6 +274,43 @@ the curve being pulled to the axis from the right.</p>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">p</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">p</span><span class="p">)</span>
 </pre></div>
 </div><video src="2026-10-17-one-dimension/ring_down.mp4?v=1792330847" autoplay loop muted playsinline></video></div>
+<hr id="2026-10-20-softmax" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
+<div class=dim>2026-10-20 &middot; <a class=back href="2026-10-20-softmax/index.html">permalink</a></div>
+<div class=dayhead>Softmax, and the subtraction nobody mentions</div>
+<p>Twenty-four scores go in, twenty-four probabilities come out. The
+textbook writes two operations. The jaxpr shows four.</p>
+<!-- order: 6 -->
+<div class=code><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jaxvis</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">fad</span>
+
+<span class="n">fad</span><span class="o">.</span><span class="n">day</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">jaxvis</span><span class="o">.</span><span class="n">rail</span><span class="p">(</span><span class="o">-</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+</pre></div>
+</div>
+<h2>The formula as written</h2>
+<p>$$\operatorname{softmax}(x)_i = \frac{e^{x_i}}{\sum_j e^{x_j}}$$</p>
+<p>Exponentiate, then divide by the total. Watch the sum arrive as a flat
+line: one number, broadcast back across all twenty-four.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"vapor"</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">softmax</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">e</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-10-20-softmax/softmax.mp4?v=1792504376" autoplay loop muted playsinline></video></div>
+<h2>The formula as implemented</h2>
+<p>$$\operatorname{softmax}(x)_i = \frac{e^{x_i - \max x}}{\sum_j e^{x_j - \max x}}$$</p>
+<p>Subtracting the largest score changes nothing — it cancels, top and
+bottom. What it buys is that the biggest exponent is now $e^0 = 1$, so
+nothing can overflow. Two extra steps in the jaxpr, and the curve that
+comes out is identical.</p>
+<div class=pair><div class=code><div class="highlight"><pre><span></span><span class="nd">@jaxvis</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">**</span><span class="n">jaxvis</span><span class="o">.</span><span class="n">curve</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">),</span> <span class="n">palette</span><span class="o">=</span><span class="s2">"bloom"</span><span class="p">))</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">stable_softmax</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">e</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div><video src="2026-10-20-softmax/stable_softmax.mp4?v=1792504378" autoplay loop muted playsinline></video></div>
 <hr id="2026-10-18-came-from" style="border:0;border-top:1px solid var(--line);margin:46px 0 22px">
 <div class=dim>2026-10-18 &middot; <a class=back href="2026-10-18-came-from/index.html">permalink</a></div>
 <div class=dayhead>Where it came from</div>

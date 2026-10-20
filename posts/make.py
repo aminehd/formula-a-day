@@ -294,6 +294,18 @@ def gelu(p):
     return 0.5 * p * (1 + jnp.tanh(inner))""",
     ),
     dict(
+        name="softmax",
+        mp4=DOCS / "2026-10-20-softmax" / "stable_softmax.mp4",
+        tex=r"$\operatorname{softmax}(x)_i=\dfrac{e^{x_i-\max x}}{\sum_j e^{x_j-\max x}}$",
+        every=3,
+        code="""x = jaxvis.rail(-6.0, 6.0, 24)
+
+@jaxvis.analyze(x, **jaxvis.curve(x))
+def softmax(p):
+    e = jnp.exp(p - jnp.max(p))
+    return e / jnp.sum(e)""",
+    ),
+    dict(
         name="cloud",
         mp4=DOCS / "2026-10-15-building-blocks" / "the_squash.mp4",
         tex=r"$y=\tanh(kx)$",
